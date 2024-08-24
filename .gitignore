@@ -1,0 +1,9 @@
+log/*
+*.sdom
+tests/*
+test
+test.srpt
+renderer/test
+renderer/test.c
+test.sh
+planning/*
