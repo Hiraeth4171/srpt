@@ -10,6 +10,7 @@
     options: filepath[srpt,sdom]\n"
 
 #define HELP "\033[96;4mHELP\033[0m: srpt <command> [options] \n\
+    \033[1msrpt init <project-name>\033[0m ; initialize a new project with project-name in cwd\n\
     \033[1msrpt compile <filepath.srpt>\033[0m ; compiles the srpt file given into an sdom binary\n\n\
             --watch,-w ; watches for updates to the srpt source script and recompiles upon change\n\
             --serialize,-s ; toggle serialization, default is TRUE, this will make compile, render pipelines faster if you do them in the same run, but it won't produce a workable sdom, the sdom will only work for the duration of the rendering\
@@ -38,13 +39,18 @@ int main(int argc, char* argv[]) {
     // srpt compile x.srpt -> [x.sdom, ..., z.sdom] : compile.c 
     // srpt render x.sdom -> GUI : render.c
     // srpt package x.sdom -> executable : package.c
+    // srpt init project-name -> 
     //
     char** arguments = malloc(sizeof(char*)*MAX_ARGUMENTS);
     short /* options_index = 0, */ arguments_index = 0;
     for (int i = 1; i < argc; ++i) {
         //if (argv[i][0] == '-') options[options_index++] = argv[i];
         //else 
-        if (argv[i][0] != '-' && str_cmp(argv[i], "compile") != 0 && str_cmp(argv[i], "render") != 0 &&str_cmp(argv[i], "package") != 0){
+        if (argv[i][0] != '-'
+            && str_cmp(argv[i], "compile")  != 0 
+            && str_cmp(argv[i], "render")   != 0 
+            && str_cmp(argv[i], "package")  != 0 
+            && str_cmp(argv[i], "init")     != 0){
             arguments[arguments_index++] = argv[i];
         }
     }
@@ -92,7 +98,7 @@ int main(int argc, char* argv[]) {
             // process options here
             package(arguments[arguments_index++], "output", 0); // to be replaced
         } else NEW_COMMAND("init", ptr, len) {
-            // TODO: initialize a new "repo"
+            //if 
         }
     }
     free(arguments);

@@ -314,6 +314,13 @@ Element* sdom(Token* tokens, long len) {
                 current_parent->dim.size.x = atoi(tokens[i+4].value);
                 current_parent->dim.size.y = atoi(tokens[i+5].value);
                 i+=5;
+            case BACKGROUND_COLOR:
+                int hex = (int)strtol(tokens[i+2].value, NULL, 16);
+                current_parent->color.r = (unsigned char)((hex >> 16) & 0xFF);
+                current_parent->color.g = (unsigned char)((hex >> 8) & 0xFF);
+                current_parent->color.b = (unsigned char)(hex & 0xFF);
+                current_parent->color.a = (unsigned char)255;
+                add_property(current_parent, P_BACKGROUNDCOLOR, "background-color", tokens[i+2].value);
             case BANG:
                 // edit "settings"
                 if (str_cmp(tokens[i].value, "resolution") == 0) {
@@ -358,20 +365,11 @@ Element* sdom(Token* tokens, long len) {
                 append_child(current_parent,
                         newest_child);
                 break;
-            case BACKGROUND_COLOR:
-                int hex = (int)strtol(tokens[i+2].value, NULL, 16);
-                current_parent->color.r = (unsigned char)((hex >> 16) & 0xFF);
-                current_parent->color.g = (unsigned char)((hex >> 8) & 0xFF);
-                current_parent->color.b = (unsigned char)(hex & 0xFF);
-                current_parent->color.a = (unsigned char)255;
-                add_property(current_parent, P_BACKGROUNDCOLOR, "background-color", tokens[i+2].value);
             case LBRACE:
                 current_parent = newest_child;
-                if (current_parent) printf("switched in to new parent: %s\n\n", current_parent->name.data);
                 break;
             case RBRACE:
                 current_parent = current_parent->_parent;
-                if(current_parent) printf("switched out to new parent: %s\n\n", current_parent->name.data);
                 break;
             default:
                 break;

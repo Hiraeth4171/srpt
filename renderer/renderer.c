@@ -27,10 +27,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glUniform2f(g_res_loc, (float)g_settings->resolution.x, (float)g_settings->resolution.y);
     //glMatrixMode(GL_PROJECTION_MATRIX);
     float proj[16] = {
-        (2.0f/(float)width), 0.0f          , 0.0f , 0.0f,
-        0.0f        , -(2.0f/(float)height), 0.0f , 0.0f,
-        0.0f        , 0.0f          , -0.5f, 0.0f,
-        -1.0f       , 1.0f          , 0.0f , 1.0f
+        (2.0f/(float)width) , 0.0f                  , 0.0f  , 0.0f,
+        0.0f                , -(2.0f/(float)height) , 0.0f  , 0.0f,
+        0.0f                , 0.0f                  , -0.5f , 0.0f,
+        -1.0f               , 1.0f                  , 0.0f  , 1.0f
     };
     glUniformMatrix4fv(g_proj_loc, 1, GL_FALSE, proj);
 }
@@ -79,6 +79,22 @@ unsigned int load_shaders() {
     glDeleteShader(_vertex_shader);
     return _shader_program;
 }
+
+
+void draw_element(Element* elem, int vertexColorLocation) {
+    
+    float verts[] = {
+        (float)elem->dim.pos.x, (float)(elem->dim.pos.y+elem->dim.size.y), -1.0f,
+        (float)(elem->dim.pos.x+elem->dim.size.x), (float)(elem->dim.pos.y+elem->dim.size.y), -1.0f,
+        (float)(elem->dim.pos.x+elem->dim.size.x), (float)elem->dim.pos.y, -1.0f,
+        (float)elem->dim.pos.x, (float)elem->dim.pos.y, -1.0f,
+    };
+
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
 
 int renderer_run(Element* main, Settings* settings) {
     // glfw initialization
@@ -166,7 +182,7 @@ int renderer_run(Element* main, Settings* settings) {
     g_proj_loc = glGetUniformLocation(shader_program, "proj");
     int view_loc = glGetUniformLocation(shader_program, "view");
     glUseProgram(shader_program);
-    glUniform4f(vertexColorLocation, main->children[0]->color.r, main->children[0]->color.g, main->children[0]->color.b, main->children[0]->color.a);
+    glUniform4f(vertexColorLocation, main->color.r, main->color.g, main->color.b, main->color.a);
     float view[16] = {
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
@@ -181,13 +197,12 @@ int renderer_run(Element* main, Settings* settings) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // RENDER
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        draw_element(main, vertexColorLocation);
 
         glfwPollEvents();
         glfwSwapBuffers(window); 
     }
-
+    
     // free glfw resources
     glfwTerminate();
     return 0;
