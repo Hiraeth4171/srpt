@@ -17,6 +17,13 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y gcc libglfw3 xorg
+    - name: env-check
+      run: |
+        pkg-config --path glfw3
+        pkg-config --path x11
+    - name: environment
+      run: |
+        export PKG_CONFIG_PATH=/usr/lib/pkgconfig/:$PKG_CONFIG_PATH
     - name: make
       run: make with-renderer-x
   build-windows:
