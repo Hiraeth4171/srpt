@@ -31,7 +31,7 @@ void add_property(Element* elem, PropertyType type, char* name, char* value) {
     elem->properties[elem->properties_length].name.length = name_len;
     elem->properties[elem->properties_length].name.data = create_str(name, name_len);
     elem->properties[elem->properties_length].value.length = value_len;
-    elem->properties[elem->properties_length++].value.data = create_str(value, name_len);
+    elem->properties[elem->properties_length++].value.data = create_str(value, value_len);
 }
 
 Settings* get_default_settings() {
@@ -86,7 +86,7 @@ void print_settings(Settings* settings) {
 void print_properties(Property* properties, unsigned int length) {
     if (properties == NULL) return;
     for (unsigned int i = 0; i < length; ++i) {
-        printf("%s, %s\n", properties[i].name.data, properties[i].value.data);
+        printf("\n\t{%s, %s}\n", properties[i].name.data, properties[i].value.data);
     }
 }
 

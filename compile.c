@@ -37,10 +37,15 @@ typedef enum {
     SEMI, // ;
     COLOR, // color
     BACKGROUND_COLOR, //BACKGROUND_COLOR
+    COLOR_LOOKUP, // $thing
     IMG,
     BUTTON,
+    POSITION,
     DIM,
     TEXTBOX,
+    CANVAS,
+    SWITCHER,
+    OVERLAY,
     CONTENT,
     BANG,
     DOT, // .
@@ -60,10 +65,15 @@ char* lookup[] = {
     "SEMI",
     "COLOR",
     "BACKGROUND_COLOR",
+    "COLOR_LOOKUP",
     "IMG", 
     "BUTTON",
+    "POSITION",
     "DIM",
     "TEXTBOX",
+    "CANVAS",
+    "SWITCHER",
+    "OVERLAY",
     "CONTENT",
     "BANG (!)",
     "DOT",
@@ -221,6 +231,10 @@ Token* tokenize(char* buffer, long* size) {
             create_token_at_index(tokens, index, 
                     HEX_COLOR, extract_non_special(ptr, len, ""), len);
             ptr+=*len-1;index++;
+        } else if (*ptr == '$') {
+            create_token_at_index(tokens, index, 
+                    COLOR_LOOKUP, extract_non_special(ptr, len, ""), len);
+            ptr+=*len-1;index++;
         } else if (is_number(*ptr)) {
             create_token_at_index(tokens, index,
                     NUMBER, extract_number(ptr, len), len);
@@ -233,10 +247,13 @@ Token* tokenize(char* buffer, long* size) {
         TOKENIZE_KEYWORD("color", COLOR, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("background-color", BACKGROUND_COLOR, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("content", CONTENT, ptr, len, tokens, index)
+        TOKENIZE_KEYWORD("position", POSITION, ptr, len, tokens, index)
+        TOKENIZE_KEYWORD("dim", DIM, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("dim", DIM, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("img", IMG, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("button", BUTTON, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("textbox", TEXTBOX, ptr, len, tokens, index)
+        TOKENIZE_KEYWORD("canvas", CANVAS, ptr, len, tokens, index)
         TOKENIZE_DYNAMIC_KEYWORD(extract_non_special(ptr, len, ""), CHAR_AT_START('!', ptr, buffer), BANG, ptr, len, tokens, index)
         ptr++;
     }
@@ -274,6 +291,7 @@ Element* sdom(Token* tokens, long len) {
             (Rect){(vec2){0,0},(vec2){10,10}}, 
             zero, NULL, 0);
     Element* current_parent = main, *newest_child = NULL;
+    int hex;
     l_settings = get_default_settings();
     for(long i = 0; i < len; ++i) {
         switch (tokens[i].type) {
@@ -307,6 +325,40 @@ Element* sdom(Token* tokens, long len) {
                 append_child(current_parent,
                         newest_child);
                 break;
+            case CANVAS: // canvas
+                newest_child = create_element(
+                        current_parent, NULL, 0, E_CANVAS,
+                        tokens[i].length,
+                        create_str(tokens[i].value, tokens[i].length),
+                        (Rect){(vec2){0,0},(vec2){10,10}}, 
+                        zero, NULL, 0);
+                append_child(current_parent,
+                        newest_child);
+                break;
+            case SWITCHER: // switcher
+                newest_child = create_element(
+                        current_parent, NULL, 0, E_SWITCHER,
+                        tokens[i].length,
+                        create_str(tokens[i].value, tokens[i].length),
+                        (Rect){(vec2){0,0},(vec2){10,10}}, 
+                        zero, NULL, 0);
+                append_child(current_parent,
+                        newest_child);
+                break;
+            case OVERLAY: // OVERLAY
+                newest_child = create_element(
+                        current_parent, NULL, 0, E_SWITCHER,
+                        tokens[i].length,
+                        create_str(tokens[i].value, tokens[i].length),
+                        (Rect){(vec2){0,0},(vec2){10,10}}, 
+                        zero, NULL, 0);
+                append_child(current_parent,
+                        newest_child);
+                break;
+            case POSITION:
+                // code
+                add_property(current_parent, P_POSITION, "position", tokens[i+2].value);
+                break;
             case DIM:
                 //skip ":"
                 current_parent->dim.pos.x = atoi(tokens[i+2].value);
@@ -315,12 +367,19 @@ Element* sdom(Token* tokens, long len) {
                 current_parent->dim.size.y = atoi(tokens[i+5].value);
                 i+=5;
             case BACKGROUND_COLOR:
-                int hex = (int)strtol(tokens[i+2].value, NULL, 16);
+                //add_property(current_parent, P_BACKGROUNDCOLOR, "background-color", tokens[i+2].value);
+                hex = (int)strtol(tokens[i+2].value, NULL, 16);
                 current_parent->color.r = (unsigned char)((hex >> 16) & 0xFF);
                 current_parent->color.g = (unsigned char)((hex >> 8) & 0xFF);
                 current_parent->color.b = (unsigned char)(hex & 0xFF);
                 current_parent->color.a = (unsigned char)255;
-                add_property(current_parent, P_BACKGROUNDCOLOR, "background-color", tokens[i+2].value);
+            case COLOR:
+                //add_property(current_parent, P_COLOR, "color", tokens[i+2].value);
+                hex = (int)strtol(tokens[i+2].value, NULL, 16);
+                current_parent->color.r = (unsigned char)((hex >> 16) & 0xFF);
+                current_parent->color.g = (unsigned char)((hex >> 8) & 0xFF);
+                current_parent->color.b = (unsigned char)(hex & 0xFF);
+                current_parent->color.a = (unsigned char)255;
             case BANG:
                 // edit "settings"
                 if (str_cmp(tokens[i].value, "resolution") == 0) {
@@ -445,7 +504,7 @@ void write_sdom_to_binary(Element* res, char* output_file, bool serialize) {
 
 void free_tokens(Token* tokens, long len) {
     for(int i = len-1; i >= 0; --i) {
-        if(tokens[i].type >= 11){
+        if(tokens[i].type >= 16){
             free(tokens[i].value);
         }
     }

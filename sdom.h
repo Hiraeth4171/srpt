@@ -29,9 +29,8 @@ typedef struct Color {
 
 typedef enum PropertyType {
     P_COLOR,                // hex color
-    P_BACKGROUNDCOLOR,      // hex color
     P_SIZE,                 // "20 40"
-    P_POSITION,             // "x y"
+    P_POSITION,             // "absolute, relative"
     P_PADDING,              // "x y w z"
     P_ORDER,                // "vertical|horizontal, v|h"
     P_SRC,                  // "./asset"
@@ -43,12 +42,16 @@ typedef enum PropertyType {
 
 typedef enum ElementType {
     E_BUTTON,
-    E_TEXT,
+    E_LABEL,
+    E_CANVAS,
     E_SPACE,
     E_IMG,
     E_MAIN,
     E_ELEMENT,
     E_TEXTBOX,
+    E_SWITCHER,
+    E_OVERLAY,
+    E_SCROLL,
 } ElementType;
 
 typedef struct __attribute__((__packed__)) String {

@@ -7,3 +7,4 @@ renderer/test
 renderer/test.c
 test.sh
 planning/*
+.clangd

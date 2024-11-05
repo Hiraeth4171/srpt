@@ -23,6 +23,7 @@ void read_properties(Property * properties, unsigned int properties_length, FILE
 void read_element(Element* res, Element* _parent, FILE* fd) {
     // ignore _parent in read, assign after;
     // forward allocate, allocate a child before passing it on;
+    // put this all into one fread (smh)
     fread(&res->type, sizeof(ElementType), 1, fd);
     fread(&res->dim.pos.x, sizeof(int), 1, fd);
     fread(&res->dim.pos.y, sizeof(int), 1, fd);

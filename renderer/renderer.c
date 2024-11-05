@@ -81,18 +81,19 @@ unsigned int load_shaders() {
 }
 
 
-void draw_element(Element* elem, int vertexColorLocation) {
-    
+void draw_element(Element* elem) {
     float verts[] = {
-        (float)elem->dim.pos.x, (float)(elem->dim.pos.y+elem->dim.size.y), -1.0f,
-        (float)(elem->dim.pos.x+elem->dim.size.x), (float)(elem->dim.pos.y+elem->dim.size.y), -1.0f,
-        (float)(elem->dim.pos.x+elem->dim.size.x), (float)elem->dim.pos.y, -1.0f,
-        (float)elem->dim.pos.x, (float)elem->dim.pos.y, -1.0f,
+        (float)elem->dim.pos.x, (float)(elem->dim.pos.y+elem->dim.size.y), -1.0f, (float)elem->color.r, (float)elem->color.g, (float)elem->color.b, (float)elem->color.a,
+        (float)(elem->dim.pos.x+elem->dim.size.x), (float)(elem->dim.pos.y+elem->dim.size.y), -1.0f, (float)elem->color.r, (float)elem->color.g, (float)elem->color.b, (float)elem->color.a,
+        (float)(elem->dim.pos.x+elem->dim.size.x), (float)elem->dim.pos.y, -1.0f, (float)elem->color.r, (float)elem->color.g, (float)elem->color.b, (float)elem->color.a,
+        (float)elem->dim.pos.x, (float)elem->dim.pos.y, -1.0f, (float)elem->color.r, (float)elem->color.g, (float)elem->color.b, (float)elem->color.a
     };
 
-
-    glBindVertexArray(VAO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    for (size_t i = 0; i < elem->children_length; ++i) {
+        draw_element(elem->children[i]);
+    }
 }
 
 
@@ -145,12 +146,12 @@ int renderer_run(Element* main, Settings* settings) {
     //
     // DO SOME BATCH RENDERING.
 
-    float verts[] = {
+    /*float verts[] = {
         (float)main->dim.pos.x, (float)(main->dim.pos.y+main->dim.size.y), -1.0f,
         (float)(main->dim.pos.x+main->dim.size.x), (float)(main->dim.pos.y+main->dim.size.y), -1.0f,
         (float)(main->dim.pos.x+main->dim.size.x), (float)main->dim.pos.y, -1.0f,
         (float)main->dim.pos.x, (float)main->dim.pos.y, -1.0f,
-    };
+    };*/
     /*float verts[] = {
         -1.0f, -1.0f, 0.0f,
         -1.0f, 1.0f, 0.0f,
@@ -158,16 +159,16 @@ int renderer_run(Element* main, Settings* settings) {
         1.0f, -1.0f, 0.0f,
     };*/
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-
     // EBO bind and data
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
 
 
     // define interpretation of vertex array 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const void*)12);
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -177,12 +178,9 @@ int renderer_run(Element* main, Settings* settings) {
     // wireframe
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // draw loop
-    int vertexColorLocation = glGetUniformLocation(shader_program, "backgroundColor");
     g_res_loc = glGetUniformLocation(shader_program, "resolution");
     g_proj_loc = glGetUniformLocation(shader_program, "proj");
     int view_loc = glGetUniformLocation(shader_program, "view");
-    glUseProgram(shader_program);
-    glUniform4f(vertexColorLocation, main->color.r, main->color.g, main->color.b, main->color.a);
     float view[16] = {
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
@@ -190,14 +188,18 @@ int renderer_run(Element* main, Settings* settings) {
         0.0f, 0.0f, 0.0f, 1.0f
     };
     glUniformMatrix4fv(view_loc, 1, GL_FALSE, view);
+    glUseProgram(shader_program);
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // RENDER
-        draw_element(main, vertexColorLocation);
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO_triangle);
+        draw_element(main);
+
 
         glfwPollEvents();
         glfwSwapBuffers(window); 
