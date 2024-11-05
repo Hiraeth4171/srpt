@@ -13,8 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get glfw x11
     - name: make
-      run: make with-renderer
+      run: make with-renderer-x
   build-windows:
     runs-on: windows-latest
     steps:
