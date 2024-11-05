@@ -16,7 +16,7 @@ jobs:
     - name: dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc libglfw3 xorg pkg-config
+        sudo apt-get install -y libglfw3-dev xorg-dev pkg-config
     - name: environment
       run: |
         export PKG_CONFIG_PATH=/usr/lib/pkgconfig/:$PKG_CONFIG_PATH
