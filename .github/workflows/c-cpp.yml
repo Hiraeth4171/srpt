@@ -16,7 +16,7 @@ jobs:
     - name: dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc glfw x11
+        sudo apt-get install -y gcc libglfw3 xorg
     - name: make
       run: make with-renderer-x
   build-windows:
