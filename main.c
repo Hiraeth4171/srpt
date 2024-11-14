@@ -56,10 +56,10 @@ int main(int argc, char* argv[]) {
     }
     /* options_index = 0; */ arguments_index = 0;
     unsigned int* len = malloc(sizeof(unsigned int));
+    bool serialize = TRUE; // global option sets
     for (int i = 1; i < argc; ++i) { 
         // seperate into 2 loops, one for options one for commands
         char* ptr = argv[i];
-        bool serialize = TRUE; // global option sets
         // generals;
         NEW_OPTION("h", printf, HELP, ptr, len)
         else NEW_OPTION("u", printf, USAGE, ptr, len)
@@ -74,6 +74,7 @@ int main(int argc, char* argv[]) {
                 } else if (COMMAND_OPTION("w", argv[i], len) || COMMAND_OPTION("-watch", argv[i], len)) {
                     watch = TRUE;
                 } else if (COMMAND_OPTION("s", argv[i], len) || COMMAND_OPTION("-serialize", argv[i], len)) {
+                    // replace this later with "preview" command option
                     serialize = FALSE;
                 } else if (COMMAND("render", ptr) || COMMAND("package", ptr)) {
                     break;    
@@ -98,7 +99,11 @@ int main(int argc, char* argv[]) {
             // process options here
             package(arguments[arguments_index++], "output", 0); // to be replaced
         } else NEW_COMMAND("init", ptr, len) {
-            //if 
+            // initalize a new srpt project
+            /*
+             *  clone a template repo
+             *  
+             * */
         }
     }
     free(arguments);

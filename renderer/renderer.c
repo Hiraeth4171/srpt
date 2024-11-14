@@ -16,6 +16,13 @@ int indicies[] = {
 Settings* g_settings = NULL;
 int g_res_loc, g_proj_loc;
 
+extern const char vshader[];
+extern const char* vshader_end;
+extern int vshader_size;
+extern const char fshader[];
+extern const char* fshader_end;
+extern int fshader_size;
+
 void process_input(GLFWwindow *window) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, 1);
@@ -36,11 +43,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 unsigned int load_shaders() {
-    const char* _vertex_shader_source = read_file_io("./renderer/shaders/basic_shader.shader");
-    const char* _frag_shader_source = read_file_io("./renderer/shaders/basic_frag_shader.shader");
+    //const char* _vertex_shader_source = read_file_io("./renderer/shaders/basic_shader.shader");
+    //const char* _frag_shader_source = read_file_io("./renderer/shaders/basic_frag_shader.shader");
     unsigned int _vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-
-    glShaderSource(_vertex_shader, 1, &_vertex_shader_source, NULL);
+    const char* _vsource = vshader, * _fsource = fshader; // unfortunately necessary
+    glShaderSource(_vertex_shader, 1, &_vsource, NULL);
     glCompileShader(_vertex_shader);
 
     GLint _success;
@@ -53,7 +60,7 @@ unsigned int load_shaders() {
 
     unsigned int _frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
-    glShaderSource(_frag_shader, 1, &_frag_shader_source, NULL);
+    glShaderSource(_frag_shader, 1, &_fsource, NULL);
     glCompileShader(_frag_shader);
 
 

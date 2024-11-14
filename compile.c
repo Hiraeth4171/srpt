@@ -493,8 +493,8 @@ void write_sdom_to_binary(Element* res, char* output_file, bool serialize) {
     printf("\t (-) %s\n", output_file);
     FILE* fd = fopen(output_file, "wb");
     if (!serialize && res != NULL) {
-        fwrite(res, sizeof(Element), 1, fd); 
-        fwrite(l_settings, sizeof(Settings), 1, fd);
+        fwrite(&res, sizeof(Element*), 1, fd); 
+        fwrite(&l_settings, sizeof(Settings*), 1, fd);
     } else if (res != NULL) {
         write_element(res, fd);
         write_settings(l_settings, fd);

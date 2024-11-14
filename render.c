@@ -49,6 +49,7 @@ void read_element(Element* res, Element* _parent, FILE* fd) {
 }
 
 void read_settings(Settings* settings, FILE* fd) {
+    // this is terrible fix it
     fread(&settings->resolution.x, sizeof(int), 1, fd);
     fread(&settings->resolution.y, sizeof(int), 1, fd);
     fread(&settings->position.x, sizeof(int), 1, fd);
@@ -72,13 +73,15 @@ void read_settings(Settings* settings, FILE* fd) {
 }
 
 Element* read_sdom_file (char* sdom_file, _Bool serialized) {
-    Element* main = calloc(1, sizeof(Element));
+    Element* main = NULL;
     // read binary
     FILE* fd = fopen(sdom_file, "rb");
     if (!serialized) {
-        fread(main, sizeof(Element), 1, fd);
-        fread(_settings, sizeof(Settings), 1, fd);
+        printf("recieved serialized = FALSE\n");
+        fread(&main, sizeof(Element*), 1, fd);
+        fread(&_settings, sizeof(Settings*), 1, fd);
     } else {
+        main = calloc(1, sizeof(Element));
         read_element(main, NULL, fd);
         read_settings(_settings, fd);
     }
@@ -88,10 +91,10 @@ Element* read_sdom_file (char* sdom_file, _Bool serialized) {
 
 
 void render(char* sdom_file, _Bool watch, _Bool serialized){
-    _settings = calloc(1, sizeof(Settings));
+    if (serialized) _settings = calloc(1, sizeof(Settings));
     Element* main = read_sdom_file(sdom_file, serialized);
     print_element(main);
-    // create a renderer instance, use it to render the elements as they are
+    // 
     renderer_run(main, _settings);
     free_element(main);
     free_settings(_settings);

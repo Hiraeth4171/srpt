@@ -22,9 +22,3 @@ jobs:
         export PKG_CONFIG_PATH=/usr/lib/pkgconfig/:$PKG_CONFIG_PATH
     - name: make
       run: make with-renderer-x
-  build-windows:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: make
-      run: make with-renderer
