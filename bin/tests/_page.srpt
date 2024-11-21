@@ -1,0 +1,55 @@
+!import "./thing.srpt";
+!import "./login-page.srpt";
+
+!resolution 800 600
+
+!script "./scriptfile.*"
+!method "compile,<compile string>|interpret,<interpreter string>" // might wanna add an option later to package an interpreter in
+
+padding: 20 20 0 0;
+order: vertical; // default
+
+#header {
+    order: horizontal;
+    padding: 10 10 5 5;
+    dim: 0 0 1920 30;
+    // position is assumed to be relative unless specified otherwise
+    img {
+        src: "menu.jpg";
+        size: 10 10;
+        dim: 10 10 10 10;
+        background-color: #ff00ff;
+        onclick: $open_menu; // $functionname might wanna change that a bit
+    }
+
+    #logo:img {
+        src: "logo.svg";
+        size: 10 30;
+        dim: 30 10 30 10;
+        background-color: #e3e3e3;
+        onclick: load("thing.srpt", body); // loads a srpt file into a srpt obj
+    }
+
+    #search {
+        order: horizontal;
+        textbox {
+            dim: 80 10 200 10;
+            background-color: #dedede;
+            placeholder: "Search";
+        }
+        img {
+            dim: 290 10 10 10;
+            background-color: #dedede;
+            src: "search.ico";
+            onclick: $search;   
+        }
+    }
+    space: 0 20%;
+    #login:button {
+        dim: 710 10 10 10;
+        background-color: #dedede;
+        content: "Log in";
+        onclick: load("login-page", body);
+    }
+}
+

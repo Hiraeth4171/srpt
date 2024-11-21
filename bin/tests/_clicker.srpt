@@ -1,0 +1,17 @@
+!resolution 500 600;
+
+!title "this is a test!"
+!script "./clicker.c"
+!method "compile,gcc ./clicker.c " 
+// flags for including srpt will be added on automatically
+
+#main {
+    padding: 20 20 0 0;
+    order: vertical; // default
+    #counter:text {
+        
+    }
+    button {
+        onclick: $count;
+    }
+}
