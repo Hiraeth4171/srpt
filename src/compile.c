@@ -454,10 +454,7 @@ void write_property(Property* prop, FILE* fd) {
 void write_element(Element* res, FILE* fd) {
     // ignore _parent in write;
     fwrite(&res->type, sizeof(ElementType), 1, fd);
-    fwrite(&res->dim.pos.x, sizeof(int), 1, fd);
-    fwrite(&res->dim.pos.y, sizeof(int), 1, fd);
-    fwrite(&res->dim.size.x, sizeof(int), 1, fd);
-    fwrite(&res->dim.size.y, sizeof(int), 1, fd);
+    fwrite(&res->dim, sizeof(Rect), 1, fd);
     fwrite(&res->color, sizeof(char), 4, fd);
     fwrite(&res->name.length, sizeof(unsigned int), 1, fd);
     fwrite(res->name.data, sizeof(char), res->name.length, fd);
@@ -474,10 +471,8 @@ void write_element(Element* res, FILE* fd) {
 
 void write_settings(Settings* settings, FILE* fd) {
     printf("\n%d\n", settings->resolution.x);
-    fwrite(&settings->resolution.x, sizeof(int), 1, fd);
-    fwrite(&settings->resolution.y, sizeof(int), 1, fd);
-    fwrite(&settings->position.x, sizeof(int), 1, fd);
-    fwrite(&settings->position.y, sizeof(int), 1, fd);
+    fwrite(&settings->resolution, sizeof(vec2), 1, fd);
+    fwrite(&settings->position, sizeof(vec2), 1, fd);
     fwrite(&settings->title.length, sizeof(unsigned int), 1, fd);
     fwrite(settings->title.data, sizeof(char), settings->title.length, fd);
     fwrite(&settings->method.length, sizeof(unsigned int), 1, fd);

@@ -1,11 +1,8 @@
 log/*
 *.sdom
-tests/*
-test
-testx
-test.srpt
 renderer/test
 renderer/test.c
 test.sh
+srpt
 planning/*
 .clangd

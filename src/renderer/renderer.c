@@ -90,18 +90,18 @@ unsigned int load_shaders() {
 
 
 void draw_element(SDOM_Element* elem) {
-    vec2 offsets = (vec2){0}; Property* tmp;
+    static vec2 offsets = {0}; Property* tmp;
     if ((tmp = (Property*)sdt_hashtable_get(elem->properties, "position")) != NULL) {
         if (str_cmp(tmp->value.data, "relative") && elem->parent != NULL) {
-            offsets.x = elem->parent->dim.pos.x;
-            offsets.y = elem->parent->dim.pos.y;
+            offsets.x += elem->parent->dim.pos.x;
+            offsets.y +=  elem->parent->dim.pos.y;
         }
     }
     float verts[] = {
         (float)elem->dim.pos.x + offsets.x, (float)(elem->dim.pos.y+elem->dim.size.y + offsets.y), -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a,
-        (float)(elem->dim.pos.x+elem->dim.size.x+ offsets.x), (float)(elem->dim.pos.y+elem->dim.size.y+ offsets.y), -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a,
-        (float)(elem->dim.pos.x+elem->dim.size.x+ offsets.x), (float)elem->dim.pos.y+ offsets.y, -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a,
-        (float)elem->dim.pos.x+ offsets.x, (float)elem->dim.pos.y+ offsets.y, -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a
+        (float)(elem->dim.pos.x+elem->dim.size.x + offsets.x), (float)(elem->dim.pos.y+elem->dim.size.y + offsets.y), -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a,
+        (float)(elem->dim.pos.x+elem->dim.size.x + offsets.x), (float)elem->dim.pos.y + offsets.y, -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a,
+        (float)elem->dim.pos.x + offsets.x, (float)elem->dim.pos.y + offsets.y, -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a
     };
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
@@ -109,6 +109,7 @@ void draw_element(SDOM_Element* elem) {
     for (size_t i = 0; i < elem->len_children; ++i) {
         draw_element(elem->children[i]);
     }
+    offsets = (vec2){0};
 }
 
 
