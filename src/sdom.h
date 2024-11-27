@@ -1,3 +1,5 @@
+#ifndef _SDOM_H
+#define _SDOM_H
 typedef struct __attribute__((__packed__)) vec2 {
     int x;
     int y;
@@ -118,3 +120,5 @@ void print_element(Element* elem);
 Settings* get_default_settings();
 void free_settings(Settings* settings);
 void print_settings(Settings* settings);
+
+#endif

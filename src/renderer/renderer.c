@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "utils/io.h"
+#include "../utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "renderer.h"
@@ -88,23 +89,30 @@ unsigned int load_shaders() {
 }
 
 
-void draw_element(Element* elem) {
+void draw_element(SDOM_Element* elem) {
+    vec2 offsets = (vec2){0}; Property* tmp;
+    if ((tmp = (Property*)sdt_hashtable_get(elem->properties, "position")) != NULL) {
+        if (str_cmp(tmp->value.data, "relative") && elem->parent != NULL) {
+            offsets.x = elem->parent->dim.pos.x;
+            offsets.y = elem->parent->dim.pos.y;
+        }
+    }
     float verts[] = {
-        (float)elem->dim.pos.x, (float)(elem->dim.pos.y+elem->dim.size.y), -1.0f, (float)elem->color.r, (float)elem->color.g, (float)elem->color.b, (float)elem->color.a,
-        (float)(elem->dim.pos.x+elem->dim.size.x), (float)(elem->dim.pos.y+elem->dim.size.y), -1.0f, (float)elem->color.r, (float)elem->color.g, (float)elem->color.b, (float)elem->color.a,
-        (float)(elem->dim.pos.x+elem->dim.size.x), (float)elem->dim.pos.y, -1.0f, (float)elem->color.r, (float)elem->color.g, (float)elem->color.b, (float)elem->color.a,
-        (float)elem->dim.pos.x, (float)elem->dim.pos.y, -1.0f, (float)elem->color.r, (float)elem->color.g, (float)elem->color.b, (float)elem->color.a
+        (float)elem->dim.pos.x + offsets.x, (float)(elem->dim.pos.y+elem->dim.size.y + offsets.y), -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a,
+        (float)(elem->dim.pos.x+elem->dim.size.x+ offsets.x), (float)(elem->dim.pos.y+elem->dim.size.y+ offsets.y), -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a,
+        (float)(elem->dim.pos.x+elem->dim.size.x+ offsets.x), (float)elem->dim.pos.y+ offsets.y, -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a,
+        (float)elem->dim.pos.x+ offsets.x, (float)elem->dim.pos.y+ offsets.y, -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a
     };
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    for (size_t i = 0; i < elem->children_length; ++i) {
+    for (size_t i = 0; i < elem->len_children; ++i) {
         draw_element(elem->children[i]);
     }
 }
 
 
-int renderer_run(Element* main, Settings* settings) {
+int renderer_run(SDOM_Element* main, Settings* settings) {
     // glfw initialization
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

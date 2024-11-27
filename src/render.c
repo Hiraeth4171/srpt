@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "./renderer/renderer.h"
+#include "./serpent/serpent.h"
 
 Settings * _settings = NULL;
 
@@ -95,7 +96,9 @@ void render(char* sdom_file, _Bool watch, _Bool serialized){
     Element* main = read_sdom_file(sdom_file, serialized);
     print_element(main);
     // 
-    renderer_run(main, _settings);
+    SDOM_Element* res = srpt_init(main);  
+    renderer_run(res, _settings);
+    // ^ event loop
     free_element(main);
     free_settings(_settings);
 }

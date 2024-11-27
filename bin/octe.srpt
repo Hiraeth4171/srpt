@@ -1,0 +1,70 @@
+!resolution 1920 1080
+!title "testfile for octe"
+!script "./test.c"
+!method "package"
+
+dim: 0 0 1920 1080;
+background-color:#160F29;
+
+#octe {
+    #o{
+        #top {
+            dim: 350 50 80 20;
+            background-color:#FFB7C3;
+        }
+        #left {
+            dim: 350 50 20 200;
+            background-color:#FFB7C3;
+        }
+        #right {
+            dim: 430 50 20 200;
+            background-color:#FFB7C3;
+        }
+        #bottom {
+            dim: 350 230 80 20;
+            background-color:#FFB7C3;
+        }
+    }
+    #c {
+        #top {
+            dim: 460 50 80 20;
+            background-color:#FFB7C3;
+        }
+        #left {
+            dim: 460 50 20 200;
+            background-color:#FFB7C3;
+        }
+        #bottom {
+            dim: 460 230 80 20;
+            background-color:#FFB7C3;
+        }
+    }
+    #t {
+        #top {
+            dim: 550 50 80 20;
+            background-color:#FFB7C3;
+        }
+        #middle {
+            dim: 580 50 20 200;
+            background-color:#FFB7C3;
+        }
+    }
+    #e {
+        #top {
+            dim: 640 50 80 20;
+            background-color:#FFB7C3;
+        }
+        #middle {
+            dim: 640 140 80 20;
+            background-color:#FFB7C3;
+        }
+        #left {
+            dim: 640 50 20 200;
+            background-color:#FFB7C3;
+        }
+        #bottom {
+            dim: 640 230 80 20;
+            background-color:#FFB7C3;
+        }
+    }
+}

@@ -1,11 +1,11 @@
+with-renderer:
+	gcc -Wall -ggdb3 main.c utils.c compile.c render.c package.c sdom.c ./renderer/shaders.o ./renderer/renderer.c ./serpent/serpent.c ./include/glad/glad.c ./include/utils/io.c -o ../bin/srpt `pkg-config --libs --cflags glfw3 wayland-client` -lm -I/usr/lib/include -I./include/
+
 debug:
 	gcc -Wall -ggdb3 main.c utils.c compile.c render.c sdom.c -o test
 
 clean: 
 	rm -f vgcore.*
-
-with-renderer:
-	gcc -Wall -ggdb3 main.c utils.c compile.c render.c package.c sdom.c ./renderer/shaders.o ./renderer/renderer.c ./include/glad/glad.c ./include/utils/io.c -o ../bin/test `pkg-config --libs --cflags glfw3 wayland-client` -lm -I ./include/
 
 with-renderer-x:
 	gcc -Wall -ggdb3 main.c utils.c compile.c render.c package.c sdom.c ./renderer/renderer.c ./include/glad/glad.c ./include/utils/io.c -o ../bin/testx `pkg-config --libs --cflags glfw3 x11` -lm -I ./include/

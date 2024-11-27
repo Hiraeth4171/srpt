@@ -357,6 +357,8 @@ Element* sdom(Token* tokens, long len) {
                 break;
             case POSITION:
                 // code
+                // PROPERTY needs to be changed so it can accomodate multiple 
+                //  types of values using a union
                 add_property(current_parent, P_POSITION, "position", tokens[i+2].value);
                 break;
             case DIM:
