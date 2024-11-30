@@ -204,6 +204,18 @@ int renderer_run(SDOM_Element* main, Settings* settings) {
         0.0f, 0.0f, 0.0f, 1.0f
     };
     glUniformMatrix4fv(view_loc, 1, GL_FALSE, view);
+
+
+    glUniform2f(g_res_loc, (float)g_settings->resolution.x, (float)g_settings->resolution.y);
+    //glMatrixMode(GL_PROJECTION_MATRIX);
+    float proj[16] = {
+        (2.0f/(float)g_settings->resolution.x) , 0.0f                  , 0.0f  , 0.0f,
+        0.0f                , -(2.0f/(float)g_settings->resolution.y) , 0.0f  , 0.0f,
+        0.0f                , 0.0f                  , -0.5f , 0.0f,
+        -1.0f               , 1.0f                  , 0.0f  , 1.0f
+    };
+    glUniformMatrix4fv(g_proj_loc, 1, GL_FALSE, proj);
+
     glUseProgram(shader_program);
     while(!glfwWindowShouldClose(window)) {
         process_input(window);

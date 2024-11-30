@@ -6,3 +6,5 @@ test.sh
 srpt
 planning/*
 .clangd
+vendor/*
+bin/*
