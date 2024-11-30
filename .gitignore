@@ -6,5 +6,5 @@ test.sh
 srpt
 planning/*
 .clangd
-vendor/*
+vendor/windows
 bin/*

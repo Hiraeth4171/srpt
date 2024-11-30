@@ -1,0 +1,3 @@
+[submodule "vendor/sdt"]
+	path = vendor/sdt
+	url = https://github.com/Hiraeth4171/sdt
