@@ -4,6 +4,7 @@
 #include "./utils.h"
 #include <stdio.h> 
 #include <stdlib.h> 
+#include <fs/fs.h> 
 
 #define USAGE "USAGE: srpt <command> [options] \n\
     commands: compile, render, package\n\
@@ -50,7 +51,8 @@ int main(int argc, char* argv[]) {
             && str_cmp(argv[i], "compile")  != 0 
             && str_cmp(argv[i], "render")   != 0 
             && str_cmp(argv[i], "package")  != 0 
-            && str_cmp(argv[i], "init")     != 0){
+            && str_cmp(argv[i], "init")     != 0
+            && str_cmp(argv[i], "preview")  != 0){
             arguments[arguments_index++] = argv[i];
         }
     }
@@ -98,6 +100,10 @@ int main(int argc, char* argv[]) {
         } else NEW_COMMAND("package", ptr, len) {
             // process options here
             package(arguments[arguments_index++], "output", 0); // to be replaced
+        } else NEW_COMMAND("preview", ptr, len) {
+            compile(arguments[arguments_index++], "preview.sdom", TRUE, FALSE);
+            render("preview.sdom", TRUE, FALSE);
+            remove("preview.sdom");           
         } else NEW_COMMAND("init", ptr, len) {
             // initalize a new srpt project
             /*

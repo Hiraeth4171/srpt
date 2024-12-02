@@ -4,3 +4,6 @@
 [submodule "vendor/inip"]
 	path = vendor/inip
 	url = https://github.com/hiraeth4171/inip
+[submodule "vendor/fs"]
+	path = vendor/fs
+	url = https://github.com/hiraeth4171/fs
