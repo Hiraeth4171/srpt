@@ -37,7 +37,7 @@ typedef enum {
     SEMI, // ;
     COLOR, // color
     BACKGROUND_COLOR, //BACKGROUND_COLOR
-    COLOR_LOOKUP, // $thing
+    VAR_LOOKUP, // $thing
     IMG,
     BUTTON,
     POSITION,
@@ -65,7 +65,7 @@ char* lookup[] = {
     "SEMI",
     "COLOR",
     "BACKGROUND_COLOR",
-    "COLOR_LOOKUP",
+    "VAR_LOOKUP",
     "IMG", 
     "BUTTON",
     "POSITION",
@@ -233,7 +233,7 @@ Token* tokenize(char* buffer, long* size) {
             ptr+=*len-1;index++;
         } else if (*ptr == '$') {
             create_token_at_index(tokens, index, 
-                    COLOR_LOOKUP, extract_non_special(ptr, len, ""), len);
+                    VAR_LOOKUP, extract_non_special(ptr, len, ""), len);
             ptr+=*len-1;index++;
         } else if (is_number(*ptr)) {
             create_token_at_index(tokens, index,

@@ -1,7 +1,9 @@
 #include <unistd.h>
 #include <stdio.h>
+#include <inip/ini.h>
 
 int package(char* filename, char* outfile, int flags) {
+    /* do this all through fs instead */
     // access outfile (executable)
     int _res = 0;
     // access filename (.sdom)
@@ -12,7 +14,7 @@ int package(char* filename, char* outfile, int flags) {
     }
     // process flags
     // read sdom
-    // load config.ini [package] section and apply settings
+    // load config.ini [package] section and apply settings | oh i forgot i was gonna do it like that
     // required gcc run
 
 exit:

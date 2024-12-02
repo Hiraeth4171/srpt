@@ -1,3 +1,6 @@
 [submodule "vendor/sdt"]
 	path = vendor/sdt
 	url = https://github.com/Hiraeth4171/sdt
+[submodule "vendor/inip"]
+	path = vendor/inip
+	url = https://github.com/hiraeth4171/inip

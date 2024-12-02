@@ -17,5 +17,6 @@ struct SDOM_Element {
 };
 
 SDOM_Element* srpt_init(Element* sdom);
-
+SDOM_Element* get_element_by_name(char*);
+SDOM_Element* get_element_by_string(String*);
 #endif
