@@ -3,8 +3,6 @@ log/*
 renderer/test
 renderer/test.c
 test.sh
-srpt
 planning/*
 .clangd
 vendor/windows
-bin/*
