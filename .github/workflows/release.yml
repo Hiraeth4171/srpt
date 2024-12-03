@@ -21,4 +21,6 @@ jobs:
           gh release create "$tag" \
               --repo="$GITHUB_REPOSITORY" \
               --title="${tag#v}" \
-              --generate-notes
+              --generate-notes \
+              '../../bin/srpt#Linux ELF x86-64'\\
+              '../../bin/windows.exe#Windows'\\
