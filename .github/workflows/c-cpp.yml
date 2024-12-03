@@ -21,4 +21,4 @@ jobs:
       run: |
         export PKG_CONFIG_PATH=/usr/lib/pkgconfig/:$PKG_CONFIG_PATH
     - name: make
-      run: make -C src/ setup with-renderer-x
+      run: make -C src/ setup build-x
