@@ -7,6 +7,7 @@ clean:
 	rm -f vgcore.*
 
 build-x:
+	mkdir -p ../bin/x11
 	gcc $(FLAGS) $(OBJECTS) -o ../bin/x11/srpt `pkg-config --libs --cflags glfw3 x11` -lm -I./include/
 
 build-windows-cross-compile:
