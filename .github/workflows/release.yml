@@ -33,5 +33,5 @@ jobs:
               --title="${tag#v}" \
               --generate-notes \
               'bin/srpt#Linux ELF x86-64 Wayland'\
-              'bin/srptx#Linux ELF x86-64 X11'\
-              'bin/windows.exe#Windows'\
+              'bin/x11/srpt#Linux ELF x86-64 X11'\
+              'bin/srpt.exe#Windows'\

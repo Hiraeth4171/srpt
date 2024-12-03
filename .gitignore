@@ -7,4 +7,4 @@ planning/*
 .clangd
 bin/srpt.exe
 bin/srpt
-bin/srptx
+bin/x11/srpt

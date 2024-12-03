@@ -7,7 +7,7 @@ clean:
 	rm -f vgcore.*
 
 build-x:
-	gcc $(FLAGS) $(OBJECTS) -o ../bin/srptx `pkg-config --libs --cflags glfw3 x11` -lm -I./include/
+	gcc $(FLAGS) $(OBJECTS) -o ../bin/x11/srpt `pkg-config --libs --cflags glfw3 x11` -lm -I./include/
 
 build-windows-cross-compile:
 	x86_64-w64-mingw32-gcc  $(FLAGS) $(OBJECTS) -o ../bin/srpt.exe -L../vendor/windows/glfw3/lib-mingw-w64 -lglfw3  -lopengl32 -lgdi32 -lm -I./include/ -I../vendor/windows/glfw3/include
