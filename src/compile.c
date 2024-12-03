@@ -221,25 +221,15 @@ Token* tokenize(char* buffer, long* size) {
                     LADDER, extract_non_special(ptr, len, "-"), len);
             ptr+=*len-1;index++;
         } 
-        TOKENIZE_DYNAMIC_KEYWORD(extract_non_special(ptr, len, "-"), 
-                CHAR_AT_START('.', ptr, buffer), DOT, ptr, len, tokens, index) 
+        TOKENIZE_DYNAMIC_KEYWORD(extract_non_special(ptr, len, "-"), CHAR_AT_START('.', ptr, buffer), DOT, ptr, len, tokens, index) 
         ONE_CHAR_TOKEN('{', "{", LBRACE, ptr, len, tokens, index)
         ONE_CHAR_TOKEN('}', "}", RBRACE, ptr, len, tokens, index)
         ONE_CHAR_TOKEN(';', ";", SEMI, ptr, len, tokens, index)
         ONE_CHAR_TOKEN(':', ":", COL, ptr, len, tokens, index)
-        else if (*ptr == '#') {
-            create_token_at_index(tokens, index, 
-                    HEX_COLOR, extract_non_special(ptr, len, ""), len);
-            ptr+=*len-1;index++;
-        } else if (*ptr == '$') {
-            create_token_at_index(tokens, index, 
-                    VAR_LOOKUP, extract_non_special(ptr, len, ""), len);
-            ptr+=*len-1;index++;
-        } else if (is_number(*ptr)) {
-            create_token_at_index(tokens, index,
-                    NUMBER, extract_number(ptr, len), len);
-            ptr+=*len-1;index++;
-        } else if (*ptr == '"') {
+        TOKENIZE_DYNAMIC_KEYWORD(extract_non_special(ptr, len, ""), *ptr == '#', HEX_COLOR, ptr, len, tokens, index)
+        TOKENIZE_DYNAMIC_KEYWORD(extract_non_special(ptr, len, "_-"), *ptr == '$', VAR_LOOKUP, ptr, len, tokens, index)
+        TOKENIZE_DYNAMIC_KEYWORD(extract_number(ptr, len), is_number(*ptr), NUMBER, ptr, len, tokens, index)
+        else if (*ptr == '"') {
             create_token_at_index(tokens, index,
                     STRING, extract_non_special(ptr, len, " _-+,./'!$%*(){}[]#@^&=<>"), len);
             ptr+=*len+1;index++;
