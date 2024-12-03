@@ -9,9 +9,9 @@ static SDOM_Element* g_main = NULL;
 size_t hash_function(void* key, size_t size) {
     unsigned long hash = 0;
     int c;
-    while((c = *(char*)key++))
+    while((c = *(char*)key++)){
         hash = c + (hash << 6) + (hash << 16) - hash;
-
+    }
     return hash % size;
 }
 // http://www.cse.yorku.ca/~oz/hash.html#sdbm
@@ -27,9 +27,18 @@ int property_cmp(void * p1, void * p2) {
 SDOM_Element* create_sdom_elem_from_sdom(Element* sdom, SDOM_Element* parent) {
     SDOM_Element* _res = malloc(sizeof(SDOM_Element));
     *_res = (SDOM_Element){
-        (String){.data=sdom->name.data, .length=sdom->name.length},
-        sdom->type, parent, sdom->dim, sdom->color, sdom->children_length,
-        NULL, NULL};
+        (String){
+            .data=sdom->name.data, 
+            .length=sdom->name.length
+        },
+        sdom->type,
+        parent,
+        sdom->dim,
+        sdom->color,
+        sdom->children_length,
+        NULL, 
+        NULL
+    };
     _res->children = malloc(sizeof(SDOM_Element*)*_res->len_children);
     for (size_t i = 0; i < sdom->children_length; ++i) {
         _res->children[i] = create_sdom_elem_from_sdom(sdom->children[i], _res);

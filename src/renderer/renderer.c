@@ -46,6 +46,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 unsigned int load_shaders() {
     //const char* _vertex_shader_source = read_file_io("./renderer/shaders/basic_shader.shader");
     //const char* _frag_shader_source = read_file_io("./renderer/shaders/basic_frag_shader.shader");
+
     unsigned int _vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     const char* _vsource = vshader, * _fsource = fshader; // unfortunately necessary
     glShaderSource(_vertex_shader, 1, &_vsource, NULL);
@@ -98,10 +99,34 @@ void draw_element(SDOM_Element* elem) {
         }
     }
     float verts[] = {
-        (float)elem->dim.pos.x + offsets.x, (float)(elem->dim.pos.y+elem->dim.size.y + offsets.y), -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a,
-        (float)(elem->dim.pos.x+elem->dim.size.x + offsets.x), (float)(elem->dim.pos.y+elem->dim.size.y + offsets.y), -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a,
-        (float)(elem->dim.pos.x+elem->dim.size.x + offsets.x), (float)elem->dim.pos.y + offsets.y, -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a,
-        (float)elem->dim.pos.x + offsets.x, (float)elem->dim.pos.y + offsets.y, -1.0f, (float)elem->bg_color.r, (float)elem->bg_color.g, (float)elem->bg_color.b, (float)elem->bg_color.a
+        (float)elem->dim.pos.x + offsets.x,
+        (float)(elem->dim.pos.y+elem->dim.size.y + offsets.y),
+        -1.0f,
+        (float)elem->bg_color.r,
+        (float)elem->bg_color.g,
+        (float)elem->bg_color.b,
+        (float)elem->bg_color.a,
+        (float)(elem->dim.pos.x+elem->dim.size.x + offsets.x),
+        (float)(elem->dim.pos.y+elem->dim.size.y + offsets.y),
+        -1.0f,
+        (float)elem->bg_color.r,
+        (float)elem->bg_color.g,
+        (float)elem->bg_color.b,
+        (float)elem->bg_color.a,
+        (float)(elem->dim.pos.x+elem->dim.size.x + offsets.x),
+        (float)elem->dim.pos.y + offsets.y,
+        -1.0f,
+        (float)elem->bg_color.r,
+        (float)elem->bg_color.g,
+        (float)elem->bg_color.b,
+        (float)elem->bg_color.a,
+        (float)elem->dim.pos.x + offsets.x,
+        (float)elem->dim.pos.y + offsets.y,
+        -1.0f,
+        (float)elem->bg_color.r,
+        (float)elem->bg_color.g,
+        (float)elem->bg_color.b,
+        (float)elem->bg_color.a
     };
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
