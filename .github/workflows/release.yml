@@ -22,5 +22,5 @@ jobs:
               --repo="$GITHUB_REPOSITORY" \
               --title="${tag#v}" \
               --generate-notes \
-              '../../bin/srpt#Linux ELF x86-64'\\
-              '../../bin/windows.exe#Windows'\\
+              'bin/srpt#Linux ELF x86-64'\\
+              'bin/windows.exe#Windows'\\
