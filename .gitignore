@@ -5,7 +5,6 @@ renderer/test
 renderer/test.c
 planning/*
 .clangd
-vendor/windows
 bin/srpt.exe
 bin/srpt
 bin/srptx

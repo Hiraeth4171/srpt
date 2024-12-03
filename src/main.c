@@ -4,7 +4,6 @@
 #include "./utils.h"
 #include <stdio.h> 
 #include <stdlib.h> 
-#include <fs/fs.h> 
 
 #define USAGE "USAGE: srpt <command> [options] \n\
     commands: compile, render, package\n\
