@@ -5,6 +5,5 @@ renderer/test
 renderer/test.c
 planning/*
 .clangd
-bin/srpt.exe
-bin/srpt
-bin/x11/srpt
+srpt
+srpt.exe
