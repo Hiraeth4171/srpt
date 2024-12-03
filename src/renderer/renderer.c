@@ -106,6 +106,7 @@ void draw_element(SDOM_Element* elem) {
         (float)elem->bg_color.g,
         (float)elem->bg_color.b,
         (float)elem->bg_color.a,
+
         (float)(elem->dim.pos.x+elem->dim.size.x + offsets.x),
         (float)(elem->dim.pos.y+elem->dim.size.y + offsets.y),
         -1.0f,
@@ -113,6 +114,7 @@ void draw_element(SDOM_Element* elem) {
         (float)elem->bg_color.g,
         (float)elem->bg_color.b,
         (float)elem->bg_color.a,
+
         (float)(elem->dim.pos.x+elem->dim.size.x + offsets.x),
         (float)elem->dim.pos.y + offsets.y,
         -1.0f,
@@ -120,6 +122,7 @@ void draw_element(SDOM_Element* elem) {
         (float)elem->bg_color.g,
         (float)elem->bg_color.b,
         (float)elem->bg_color.a,
+
         (float)elem->dim.pos.x + offsets.x,
         (float)elem->dim.pos.y + offsets.y,
         -1.0f,
