@@ -16,8 +16,8 @@ size_t hash_function(void* key, size_t size) {
 }
 // http://www.cse.yorku.ca/~oz/hash.html#sdbm
 
-int property_cmp(void * p1, void * p2) {
-    char* s1 = ((Property*)p1)->name.data, *s2 = (char*)p2;
+int property_cmp(void * p1, void * p2) { // this should honestly still work even if it's not a string
+    char* s1 = ((Property*)p1)->name.data, *s2 = (char*)p2; 
     while (*s1 && (*s1 == *s2)) {
         s1++; s2++;
     }

@@ -237,7 +237,7 @@ Token* tokenize(char* buffer, long* size) {
         TOKENIZE_KEYWORD("color", COLOR, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("background-color", BACKGROUND_COLOR, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("content", CONTENT, ptr, len, tokens, index)
-        TOKENIZE_KEYWORD("position", POSITION, ptr, len, tokens, index)
+        TOKENIZE_DYNAMIC_KEYWORD(extract_non_special(ptr+8, len, ""), live_compare("position:", ptr, len), POSITION, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("dim", DIM, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("dim", DIM, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("img", IMG, ptr, len, tokens, index)
@@ -337,7 +337,7 @@ Element* sdom(Token* tokens, long len) {
                 break;
             case OVERLAY: // OVERLAY
                 newest_child = create_element(
-                        current_parent, NULL, 0, E_SWITCHER,
+                        current_parent, NULL, 0, E_OVERLAY,
                         tokens[i].length,
                         create_str(tokens[i].value, tokens[i].length),
                         (Rect){(vec2){0,0},(vec2){10,10}}, 
@@ -349,7 +349,13 @@ Element* sdom(Token* tokens, long len) {
                 // code
                 // PROPERTY needs to be changed so it can accomodate multiple 
                 //  types of values using a union
-                add_property(current_parent, P_POSITION, "position", tokens[i+2].value);
+                //  followin is how you do it for later really
+                /* unsigned int j = 0, size = 0;
+                while(tokens[i+1+j++].type != SEMI);
+                char** values = malloc(j*sizeof(char*));
+                size = j;
+                while(j-- != -1) values[j] = tokens[i+1+j].value; */
+                add_property(current_parent, P_POSITION, "position", &(tokens[i].value), 1);
                 break;
             case DIM:
                 //skip ":"
@@ -436,9 +442,46 @@ void write_property(Property* prop, FILE* fd) {
     fwrite(&prop->type, sizeof(PropertyType), 1, fd);
     fwrite(&prop->name.length, sizeof(unsigned int), 1, fd);
     if (prop->name.length > 0) fwrite(prop->name.data, sizeof(char), prop->name.length, fd);
+    switch (prop->type) {
+        case P_COLOR:
+            goto string;
+            break;
+        case P_SIZE:
+            fwrite(&prop->size, sizeof(vec2), 1, fd);
+            break;
+        case P_POSITION:
+            fwrite(&prop->position, 1, 1, fd);
+            break;
+        case P_PADDING:
+            fwrite(&prop->padding, sizeof(vec4), 1, fd);
+            break;
+        case P_ORDER:
+            fwrite(&prop->orientation, 1, 1, fd);
+            break;
+        case P_SRC:
+            goto string;
+            break;
+        case P_EVENT:
+            goto string;
+            break;
+        case P_CUSTOM:
+            // no clue yet
+            goto string; // for now
+            break;
+        case P_PLACEHOLDER:
+            goto string;
+            break;
+        case P_CONTENT:
+            goto string;
+            break;
+        case P_SPACE:
+            fwrite(&prop->space, sizeof(vec2), 1, fd);
+            break;
+    }
+    return;
+string:
     fwrite(&prop->value.length, sizeof(unsigned int), 1, fd);
     if (prop->value.length > 0) fwrite(prop->value.data, sizeof(char), prop->value.length, fd);
-
 }
 
 void write_element(Element* res, FILE* fd) {

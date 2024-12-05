@@ -24,14 +24,75 @@ void append_child(Element* parent, Element* child) {
     parent->children[parent->children_length++] = child;
 }
 
-void add_property(Element* elem, PropertyType type, char* name, char* value) {
-    elem->properties = realloc(elem->properties, (elem->properties_length+1)*sizeof(Property));
-    unsigned int name_len = str_len(name), value_len = str_len(value);
+void add_property(Element* elem, PropertyType type, char* name, char** values, unsigned int values_len) {
+    elem->properties = realloc(elem->properties, (elem->properties_length+1)*sizeof(Property)); // this is a bit insane
     elem->properties[elem->properties_length].type = type;
+    unsigned int name_len = str_len(name);
     elem->properties[elem->properties_length].name.length = name_len;
     elem->properties[elem->properties_length].name.data = create_str(name, name_len);
+    switch (type) {
+        case P_COLOR:
+            if (values_len != 1) {
+                printf("BROKEN."); // later support rgba(stuff) or something
+            } else goto string;
+            break;
+        case P_SIZE:
+            if (values_len != 2) printf("BROKEN.");
+            elem->properties[elem->properties_length].size = (vec2){ atoi(values[0]), atoi(values[1]) };
+            break;
+        case P_POSITION:
+            if (values_len == 1) { 
+                if (values[0][0] == 'a') elem->properties[elem->properties_length].orientation = 0;
+                else if (values[0][0] == 'r') elem->properties[elem->properties_length].orientation = 1;
+                else if (values[0][0] == 'c') elem->properties[elem->properties_length].orientation = 2;
+            }
+            break;
+        case P_PADDING:
+            if (values_len == 2) elem->properties[elem->properties_length].padding = (vec4){ atoi(values[0]), atoi(values[1]), atoi(values[0]), atoi(values[1]) };
+            if (values_len == 4) elem->properties[elem->properties_length].padding = (vec4){ atoi(values[0]), atoi(values[1]), atoi(values[2]), atoi(values[3]) };
+            break;
+        case P_ORDER:
+            if (values_len == 1) elem->properties[elem->properties_length].orientation = str_cmp("vertical", values[0]) == 0 ? 0 : 1;
+            break;
+        case P_SRC:
+            goto string;
+            break;
+        case P_EVENT:
+            goto string;
+            break;
+        case P_CUSTOM:
+            switch (values_len) {
+                case 1:
+                    goto string;
+                    break;
+                case 2:
+                    vec2* v2 = malloc(sizeof(vec2));
+                    *v2 = (vec2){ atoi(values[0]), atoi(values[1]) };
+                    elem->properties[elem->properties_length].custom = (void*)v2;
+                case 4:
+                    vec4* v4 = malloc(sizeof(vec2));
+                    *v4 = (vec4){ atoi(values[0]), atoi(values[1]), atoi(values[2]), atoi(values[3]) };
+                    elem->properties[elem->properties_length].custom = (void*)v4;
+            }
+            break;
+        case P_PLACEHOLDER:
+            goto string;
+            break;
+        case P_CONTENT:
+            goto string;
+            break;
+        case P_SPACE:
+            if (values_len != 2) printf("BROKEN.");
+            elem->properties[elem->properties_length].space = (vec2){ atoi(values[0]), atoi(values[1]) };
+            break;
+    }
+    elem->properties_length++;
+    return;
+string:
+    unsigned int value_len = str_len(values[0]);
     elem->properties[elem->properties_length].value.length = value_len;
-    elem->properties[elem->properties_length++].value.data = create_str(value, value_len);
+    elem->properties[elem->properties_length++].value.data = create_str(values[0], value_len);
+    return;
 }
 
 Settings* get_default_settings() {
@@ -49,8 +110,9 @@ Settings* get_default_settings() {
 
 void free_properties(Property* properties, unsigned int properties_length) {
     for (int i = 0; i < properties_length; ++i) {
+        printf("%s\n",properties[i].name.data);
         free(properties[i].name.data);
-        free(properties[i].value.data);
+        if (properties[i].type != P_POSITION) free(properties[i].value.data); // VERY TEMPORARY
     }
     free(properties);
 }
@@ -61,7 +123,7 @@ void free_element(Element* elem) {
     }
     free(elem->name.data);
     if (elem->children != NULL) free(elem->children);
-    if (elem->properties != 0) free_properties(elem->properties, elem->properties_length);
+    if (elem->properties_length != 0) free_properties(elem->properties, elem->properties_length);
     free(elem);
 }
 
@@ -85,8 +147,33 @@ void print_settings(Settings* settings) {
 
 void print_properties(Property* properties, unsigned int length) {
     if (properties == NULL) return;
+    static const char* pos_lookup[3] =(const char*[3]){"absolute", "relative", "center"};
+    static const char* orientation_lookup[2] =(const char*[2]){"vertical", "horizontal"};
     for (unsigned int i = 0; i < length; ++i) {
-        printf("\n\t{%s, %s}\n", properties[i].name.data, properties[i].value.data);
+        switch (properties[i].type) {
+            case P_COLOR: case P_PLACEHOLDER: case P_CONTENT: case P_SRC: case P_EVENT: 
+                printf("\n\t{%s, %s}\n", properties[i].name.data, properties[i].value.data);
+                break;
+            case P_SIZE: case P_SPACE: 
+                printf("\n\t{%s, vec2[%d,%d]}\n", properties[i].name.data, properties[i].space.x, properties[i].space.x);
+                break;
+            case P_POSITION:
+                printf("\n\t{%s, %s}\n", properties[i].name.data, pos_lookup[(int)properties[i].position]);
+                break;
+            case P_ORDER:
+                printf("\n\t{%s, %s}\n", properties[i].name.data, orientation_lookup[(int)properties[i].orientation]);
+                break;
+            case P_PADDING:
+                printf("\n\t{%s, vec4[%d,%d,%d,%d]}\n", 
+                        properties[i].name.data, 
+                        properties[i].padding.r, 
+                        properties[i].padding.g,
+                        properties[i].padding.b,
+                        properties[i].padding.a);
+                break;
+            case P_CUSTOM:
+                break;
+        }
     }
 }
 

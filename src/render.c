@@ -13,6 +13,44 @@ void read_properties(Property * properties, unsigned int properties_length, FILE
             properties[i].name.data = calloc(properties[i].name.length+1, sizeof(char));
             fread(properties[i].name.data, sizeof(char), properties[i].name.length, fd);
         }
+        switch (properties[i].type) {
+            case P_COLOR:
+                goto string;
+                break;
+            case P_SIZE:
+                fread(&properties[i].size, sizeof(vec2), 1, fd);
+                break;
+            case P_POSITION:
+                fread(&properties[i].position, 1, 1, fd);
+                break;
+            case P_PADDING:
+                fwrite(&properties[i].padding, sizeof(vec4), 1, fd);
+                break;
+            case P_ORDER:
+                fwrite(&properties[i].orientation, 1, 1, fd);
+                break;
+            case P_SRC:
+                goto string;
+                break;
+            case P_EVENT:
+                goto string;
+                break;
+            case P_CUSTOM:
+                // no clue yet
+                goto string; // for now
+                break;
+            case P_PLACEHOLDER:
+                goto string;
+                break;
+            case P_CONTENT:
+                goto string;
+                break;
+            case P_SPACE:
+                fwrite(&properties[i].space, sizeof(vec2), 1, fd);
+                break;
+        }
+    return;
+string:
         fread(&properties[i].value.length, sizeof(unsigned int), 1, fd);
         if (properties[i].value.length > 0) {
             properties[i].value.data = calloc(properties[i].value.length+1, sizeof(char));

@@ -9,11 +9,11 @@ background-color:#0000FF;
     dim: 10 10 200 200;
     background-color: #ff0000;
     #small {
-        position: relative;
+        position:relative;
         dim: 50 50 150 150;
         background-color: #00ff00;
         #smaller {
-            position: relative;
+            position:relative;
             dim: 0 0 50 50;
             background-color: #ffff00;
         }

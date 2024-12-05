@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "SDT/sdt.h"
 #include "utils/io.h"
 #include "../utils.h"
 #include <stdio.h>
@@ -93,9 +94,16 @@ unsigned int load_shaders() {
 void draw_element(SDOM_Element* elem) {
     static vec2 offsets = {0}; Property* tmp;
     if ((tmp = (Property*)sdt_hashtable_get(elem->properties, "position")) != NULL) {
-        if (str_cmp(tmp->value.data, "relative") && elem->parent != NULL) {
-            offsets.x += elem->parent->dim.pos.x;
-            offsets.y +=  elem->parent->dim.pos.y;
+        printf("%d\n", tmp->position);
+        switch(tmp->position) {
+            case 0:
+                break;
+            case 1:
+                offsets.x += elem->parent->dim.pos.x;
+                offsets.y += elem->parent->dim.pos.y;
+                break;
+            case 2:
+                break;
         }
     }
     float verts[] = {
