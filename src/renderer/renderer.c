@@ -94,7 +94,6 @@ unsigned int load_shaders() {
 void draw_element(SDOM_Element* elem) {
     static vec2 offsets = {0}; Property* tmp;
     if ((tmp = (Property*)sdt_hashtable_get(elem->properties, "position")) != NULL) {
-        printf("%d\n", tmp->position);
         switch(tmp->position) {
             case 0:
                 break;
@@ -103,6 +102,8 @@ void draw_element(SDOM_Element* elem) {
                 offsets.y += elem->parent->dim.pos.y;
                 break;
             case 2:
+                offsets.x += elem->parent->dim.pos.x + elem->parent->dim.size.x/2 - elem->dim.size.x/2;
+                offsets.y += elem->parent->dim.pos.y + elem->parent->dim.size.y/2 - elem->dim.size.y/2;
                 break;
         }
     }

@@ -438,7 +438,6 @@ Element* sdom(Token* tokens, long len) {
 }
 
 void write_property(Property* prop, FILE* fd) {
-    printf("\n\n\n%d\n\n\n", prop->type);
     fwrite(&prop->type, sizeof(PropertyType), 1, fd);
     fwrite(&prop->name.length, sizeof(unsigned int), 1, fd);
     if (prop->name.length > 0) fwrite(prop->name.data, sizeof(char), prop->name.length, fd);

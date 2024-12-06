@@ -6,15 +6,15 @@ dim: 0 0 1920 1080;
 background-color:#0000FF;
 
 #big {
-    dim: 10 10 200 200;
+    dim: 10 10 800 200;
     background-color: #ff0000;
     #small {
         position:relative;
-        dim: 50 50 150 150;
+        dim: 2 2 450 150;
         background-color: #00ff00;
         #smaller {
-            position:relative;
-            dim: 0 0 50 50;
+            position:center;
+            dim: 0 0 100 50;
             background-color: #ffff00;
         }
     }

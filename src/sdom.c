@@ -42,9 +42,10 @@ void add_property(Element* elem, PropertyType type, char* name, char** values, u
             break;
         case P_POSITION:
             if (values_len == 1) { 
-                if (values[0][0] == 'a') elem->properties[elem->properties_length].orientation = 0;
-                else if (values[0][0] == 'r') elem->properties[elem->properties_length].orientation = 1;
-                else if (values[0][0] == 'c') elem->properties[elem->properties_length].orientation = 2;
+                printf("\n\n\t(!) %s\n\n\n",values[0]);
+                if (values[0][0] == 'a') elem->properties[elem->properties_length].position = 0;
+                else if (values[0][0] == 'r') elem->properties[elem->properties_length].position = 1;
+                else if (values[0][0] == 'c') elem->properties[elem->properties_length].position = 2;
             }
             break;
         case P_PADDING:
@@ -110,7 +111,6 @@ Settings* get_default_settings() {
 
 void free_properties(Property* properties, unsigned int properties_length) {
     for (int i = 0; i < properties_length; ++i) {
-        printf("%s\n",properties[i].name.data);
         free(properties[i].name.data);
         if (properties[i].type != P_POSITION) free(properties[i].value.data); // VERY TEMPORARY
     }
