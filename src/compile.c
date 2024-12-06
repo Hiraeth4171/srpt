@@ -109,6 +109,9 @@ int compile(char* filename, char* output, bool watch, bool serialize) {
     char* buffer = read_file(file, len);
     char* lexed = lex(buffer, *len);
     free(buffer);
+    printf("\n--------------------------------------------\n");
+    printf("\n\n\t (**) %s\n\n\n", lexed);
+    printf("\n--------------------------------------------\n");
     Token* tokens = tokenize(lexed, len);
     free(lexed);
     print_tokens(tokens, *len);
@@ -132,6 +135,10 @@ char* lex(char* buffer, long size) {
     unsigned int i = 0;
     char* _buff = (char*)malloc(size);
     while (*ptr != '\0') {
+        if (*ptr == ':') {
+            _buff[i++] = *ptr++;
+            if (*ptr == ' ') ptr++;
+        }
         if (*ptr == '/' && *(ptr+1) == '/') {
             while(*ptr++ != '\n');
         }
