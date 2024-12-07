@@ -41,6 +41,7 @@ typedef enum {
     IMG,
     BUTTON,
     POSITION,
+    SHOW,
     DIM,
     TEXTBOX,
     CANVAS,
@@ -69,6 +70,7 @@ char* lookup[] = {
     "IMG", 
     "BUTTON",
     "POSITION",
+    "SHOW",
     "DIM",
     "TEXTBOX",
     "CANVAS",
@@ -245,6 +247,7 @@ Token* tokenize(char* buffer, long* size) {
         TOKENIZE_KEYWORD("background-color", BACKGROUND_COLOR, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("content", CONTENT, ptr, len, tokens, index)
         TOKENIZE_DYNAMIC_KEYWORD(extract_non_special(ptr+8, len, ""), live_compare("position:", ptr, len), POSITION, ptr, len, tokens, index)
+        TOKENIZE_DYNAMIC_KEYWORD(extract_non_special(ptr+4, len, ""), live_compare("show:", ptr, len), SHOW, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("dim", DIM, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("dim", DIM, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("img", IMG, ptr, len, tokens, index)
@@ -364,6 +367,18 @@ Element* sdom(Token* tokens, long len) {
                 while(j-- != -1) values[j] = tokens[i+1+j].value; */
                 add_property(current_parent, P_POSITION, "position", &(tokens[i].value), 1);
                 break;
+            case SHOW:
+                // code
+                // PROPERTY needs to be changed so it can accomodate multiple 
+                //  types of values using a union
+                //  followin is how you do it for later really
+                /* unsigned int j = 0, size = 0;
+                while(tokens[i+1+j++].type != SEMI);
+                char** values = malloc(j*sizeof(char*));
+                size = j;
+                while(j-- != -1) values[j] = tokens[i+1+j].value; */
+                add_property(current_parent, P_SHOW, "show", &(tokens[i].value), 1);
+                break;
             case DIM:
                 //skip ":"
                 current_parent->dim.pos.x = atoi(tokens[i+2].value);
@@ -464,6 +479,9 @@ void write_property(Property* prop, FILE* fd) {
         case P_ORDER:
             fwrite(&prop->orientation, 1, 1, fd);
             break;
+        case P_SHOW:
+            fwrite(&prop->show, sizeof(_Bool), 1, fd);
+            break;
         case P_SRC:
             goto string;
             break;
@@ -494,7 +512,7 @@ void write_element(Element* res, FILE* fd) {
     // ignore _parent in write;
     fwrite(&res->type, sizeof(ElementType), 1, fd);
     fwrite(&res->dim, sizeof(Rect), 1, fd);
-    fwrite(&res->color, sizeof(char), 4, fd);
+    fwrite(&res->color.raw, sizeof(char), 4, fd);
     fwrite(&res->name.length, sizeof(unsigned int), 1, fd);
     fwrite(res->name.data, sizeof(char), res->name.length, fd);
     fwrite(&res->children_length, sizeof(unsigned int), 1, fd);

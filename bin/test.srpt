@@ -6,14 +6,17 @@ dim: 0 0 1920 1080;
 background-color:#0000FF;
 
 #big {
+    show: true;
     dim: 10 10 800 200;
     background-color: #ff0000;
     #small {
         position: relative;
-        dim: 2 2 450 150;
+        show: true;
+        dim: 0 0 450 150;
         background-color: #00ff00;
         #smaller {
             position: center;
+            show: true;
             dim: 0 0 100 50;
             background-color: #ffff00;
         }

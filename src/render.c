@@ -6,6 +6,7 @@
 Settings * _settings = NULL;
 
 void read_properties(Property * properties, unsigned int properties_length, FILE* fd) {
+    printf("<read_properties> properties_length: %d\n", properties_length);
     for (unsigned int i = 0; i < properties_length; ++i) {
         fread(&properties[i].type, sizeof(PropertyType), 1, fd);
         fread(&properties[i].name.length, sizeof(unsigned int), 1, fd);
@@ -24,10 +25,12 @@ void read_properties(Property * properties, unsigned int properties_length, FILE
                 fread(&properties[i].position, 1, 1, fd);
                 break;
             case P_PADDING:
-                fwrite(&properties[i].padding, sizeof(vec4), 1, fd);
+                fread(&properties[i].padding, sizeof(vec4), 1, fd);
                 break;
             case P_ORDER:
-                fwrite(&properties[i].orientation, 1, 1, fd);
+                fread(&properties[i].orientation, 1, 1, fd);
+            case P_SHOW:
+                fread(&properties[i].show, sizeof(_Bool), 1, fd);
                 break;
             case P_SRC:
                 goto string;
@@ -46,7 +49,7 @@ void read_properties(Property * properties, unsigned int properties_length, FILE
                 goto string;
                 break;
             case P_SPACE:
-                fwrite(&properties[i].space, sizeof(vec2), 1, fd);
+                fread(&properties[i].space, sizeof(vec2), 1, fd);
                 break;
         }
     return;
@@ -63,6 +66,7 @@ void read_element(Element* res, Element* _parent, FILE* fd) {
     // ignore _parent in read, assign after;
     // forward allocate, allocate a child before passing it on;
     // put this all into one fread (smh)
+    res->_parent = _parent;
     fread(&res->type, sizeof(ElementType), 1, fd);
     fread(&res->dim, sizeof(Rect), 1, fd);
     fread(&res->color.raw, sizeof(char), 4, fd);
@@ -77,11 +81,11 @@ void read_element(Element* res, Element* _parent, FILE* fd) {
         read_element(res->children[i], res, fd);
     }
     fread(&res->properties_length, sizeof(unsigned int), 1, fd);
+    printf("<read_element> properties_length: %d\n", res->properties_length);
     if(res->properties_length > 0) {
         res->properties = malloc(res->properties_length * sizeof(Property));
         read_properties(res->properties, res->properties_length, fd);
     } else res->properties = NULL;
-    res->_parent = _parent;
 }
 
 void read_settings(Settings* settings, FILE* fd) {

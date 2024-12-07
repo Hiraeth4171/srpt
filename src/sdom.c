@@ -42,10 +42,15 @@ void add_property(Element* elem, PropertyType type, char* name, char** values, u
             break;
         case P_POSITION:
             if (values_len == 1) { 
-                printf("\n\n\t(!) %s\n\n\n",values[0]);
                 if (values[0][0] == 'a') elem->properties[elem->properties_length].position = 0;
                 else if (values[0][0] == 'r') elem->properties[elem->properties_length].position = 1;
                 else if (values[0][0] == 'c') elem->properties[elem->properties_length].position = 2;
+            }
+            break;
+        case P_SHOW:
+            if (values_len == 1) { 
+                if (values[0][0] == 't') elem->properties[elem->properties_length].show = 1;
+                else if (values[0][0] == 'f') elem->properties[elem->properties_length].show = 0;
             }
             break;
         case P_PADDING:
@@ -112,7 +117,13 @@ Settings* get_default_settings() {
 void free_properties(Property* properties, unsigned int properties_length) {
     for (int i = 0; i < properties_length; ++i) {
         free(properties[i].name.data);
-        if (properties[i].type != P_POSITION) free(properties[i].value.data); // VERY TEMPORARY
+        switch (properties[i].type) {
+            case P_SHOW: case P_POSITION:
+                break;
+            default:
+                free(properties[i].value.data); // VERY TEMPORARY
+                break;
+        }
     }
     free(properties);
 }
@@ -146,9 +157,11 @@ void print_settings(Settings* settings) {
 }
 
 void print_properties(Property* properties, unsigned int length) {
+    printf("length: %d\n", length);
     if (properties == NULL) return;
     static const char* pos_lookup[3] =(const char*[3]){"absolute", "relative", "center"};
     static const char* orientation_lookup[2] =(const char*[2]){"vertical", "horizontal"};
+    static const char* true_false_lookup[2] =(const char*[2]){"false", "true"};
     for (unsigned int i = 0; i < length; ++i) {
         switch (properties[i].type) {
             case P_COLOR: case P_PLACEHOLDER: case P_CONTENT: case P_SRC: case P_EVENT: 
@@ -162,6 +175,9 @@ void print_properties(Property* properties, unsigned int length) {
                 break;
             case P_ORDER:
                 printf("\n\t{%s, %s}\n", properties[i].name.data, orientation_lookup[(int)properties[i].orientation]);
+            case P_SHOW:
+                printf("correct!\n");
+                printf("\n\t{%s, %s}\n", properties[i].name.data, true_false_lookup[(int)properties[i].show]);
                 break;
             case P_PADDING:
                 printf("\n\t{%s, vec4[%d,%d,%d,%d]}\n", 

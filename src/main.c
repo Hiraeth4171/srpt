@@ -3,6 +3,7 @@
 #include "./package.h"
 #include "./utils.h"
 #include <stdio.h> 
+#include <unistd.h>
 #include <stdlib.h> 
 
 #define USAGE "USAGE: srpt <command> [options] \n\

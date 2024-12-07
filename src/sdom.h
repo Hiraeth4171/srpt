@@ -33,6 +33,7 @@ typedef enum PropertyType {
     P_COLOR,                // hex color
     P_SIZE,                 // 20 40
     P_POSITION,             // 0,1,2 "absolute, relative, center"
+    P_SHOW,                 // 1,0 "true, false"
     P_PADDING,              // left up right down
     P_ORDER,                // 0,1 "vertical|horizontal, v|h"
     P_SRC,                  // "./asset"
@@ -72,6 +73,7 @@ typedef struct __attribute__((__packed__)) Property {
         vec2 space;
         vec4 padding;
         char position;
+        _Bool show;
         _Bool orientation;
         void* custom;
     };

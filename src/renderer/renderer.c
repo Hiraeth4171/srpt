@@ -107,6 +107,11 @@ void draw_element(SDOM_Element* elem) {
                 break;
         }
     }
+    if ((tmp = (Property*)sdt_hashtable_get(elem->properties, "show")) != NULL) {
+        if(!tmp->show) {
+            return;
+        }
+    }
     float verts[] = {
         (float)elem->dim.pos.x + offsets.x,
         (float)(elem->dim.pos.y+elem->dim.size.y + offsets.y),
