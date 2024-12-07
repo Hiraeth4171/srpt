@@ -4,14 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-static SDOM_Element* g_main = NULL;
+static SDOM_Element** g_main = NULL;
 
 // http://www.cse.yorku.ca/~oz/hash.html#sdbm
 size_t hash_function(void* key, size_t size) {
     unsigned long hash = 0;
     int c;
-    char* real_key = ((Property*)key)->name.data;
-    while((c = *real_key++)){
+    while((c = *(char*)key++)){
         hash = c + (hash << 6) + (hash << 16) - hash;
     }
     return hash % size;
@@ -82,31 +81,28 @@ SDOM_Element* create_sdom_elem_from_sdom(Element* sdom, SDOM_Element* parent) {
     }
     if (sdom->properties_length == 0) {
         _res->properties = NULL;
-        return _res;
+    } else { 
+        _res->properties = sdt_hashtable_init(sdom->properties_length, sizeof(Property), hash_function, property_cmp, NULL);
     }
-    _res->properties = sdt_hashtable_init(sdom->properties_length, sizeof(Property), hash_function, property_cmp, NULL);
     for (size_t i = 0; i < sdom->properties_length; ++i) {
-        sdt_hashtable_add(_res->properties, (void*)&sdom->properties[i]);
+        sdt_hashtable_add(_res->properties, (void*)&sdom->properties[i].name.data, (void*)&sdom->properties[i]);
         printf("%s\n", sdom->name.data);
         print_property(&sdom->properties[i]);
     }
-    if (_res->properties == NULL) {
-        printf("FAILURE, YOU SUCK! @1\n");
-        exit(1);
+    if (parent == NULL) { 
+        *g_main = _res;
     }
-    if (parent == NULL) g_main = _res;
     return _res;
 }
 
 SDOM_Element* srpt_init(Element* sdom) {
     // do some stuff to initialize things idk
+    g_main = malloc(sizeof(SDOM_Element*));
     create_sdom_elem_from_sdom(sdom, NULL);
-    if (g_main->properties == NULL) {
-        printf("FAILURE, YOU SUCK! @2\n");
-        exit(1);
+    if ((*g_main)->properties != NULL) {
+        sdt_hashtable_print((*g_main)->properties, print_property);
     }
-    sdt_hashtable_print(g_main->properties, print_property);
-    return g_main;
+    return *g_main;
 }
 
 SDOM_Element* get_element_from_parent_by_name(SDOM_Element* parent, char* name) {
@@ -123,11 +119,11 @@ SDOM_Element* get_element_from_parent_by_name(SDOM_Element* parent, char* name) 
 }
 
 SDOM_Element* get_element_by_name(char* name) {
-    return get_element_from_parent_by_name(g_main, name);
+    return get_element_from_parent_by_name(*g_main, name);
 }
 
 SDOM_Element* get_element_by_string(String* name) {
-    return get_element_from_parent_by_name(g_main, name->data);
+    return get_element_from_parent_by_name(*g_main, name->data);
 }
 
 // get elements by name
