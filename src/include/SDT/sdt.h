@@ -45,16 +45,16 @@ static inline SDTHashtable* sdt_hashtable_init(size_t size, size_t item_size, si
     return _hashtable;
 }
 
-static inline void sdt_hashtable_add(SDTHashtable* hashtable, void* item_id) {
+static inline void sdt_hashtable_add(SDTHashtable* hashtable, void* item_id, void* item) {
     size_t i = hashtable->hash_function(item_id, hashtable->length);
     if (hashtable->items[i] != NULL) { // add a safegaurd
         SDTLinkedListNode* cur = hashtable->items[i];
         while (cur->next != NULL) cur = cur->next;
         cur->next = (SDTLinkedListNode*)malloc(sizeof(SDTLinkedListNode));
-        *(cur->next) = (SDTLinkedListNode){.value = (void*)item_id, .next = NULL};
+        *(cur->next) = (SDTLinkedListNode){.value = (void*)item, .next = NULL};
     }
     hashtable->items[i] = (SDTLinkedListNode*)malloc(sizeof(SDTLinkedListNode));
-    *hashtable->items[i] = (SDTLinkedListNode){.value = (void*)item_id, .next = NULL};
+    *hashtable->items[i] = (SDTLinkedListNode){.value = (void*)item, .next = NULL};
 }
 
 static inline void sdt_hashtable_remove(SDTHashtable* hashtable, void* item_id) {

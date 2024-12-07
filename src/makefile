@@ -24,7 +24,7 @@ setup:
 	mkdir -p ./include/SDT
 	mkdir -p ./include/inip
 	mkdir -p ./include/fs
-	git submodule update --init --recursive
+	git submodule update --init --recursive --remote
 	cp ../vendor/sdt/sdt.h ./include/SDT/
 	cp ../vendor/inip/src/include/inip/ini.h ./include/inip/
 	cp ../vendor/fs/src/include/fs/fs.h ./include/fs/
