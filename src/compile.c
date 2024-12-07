@@ -454,58 +454,60 @@ Element* sdom(Token* tokens, long len) {
                 break;
         } 
     }
-    print_element(main);
     print_settings(l_settings);
+    print_element(main);
     return main;
 }
 
-void write_property(Property* prop, FILE* fd) {
-    fwrite(&prop->type, sizeof(PropertyType), 1, fd);
-    fwrite(&prop->name.length, sizeof(unsigned int), 1, fd);
-    if (prop->name.length > 0) fwrite(prop->name.data, sizeof(char), prop->name.length, fd);
-    switch (prop->type) {
-        case P_COLOR:
-            goto string;
-            break;
-        case P_SIZE:
-            fwrite(&prop->size, sizeof(vec2), 1, fd);
-            break;
-        case P_POSITION:
-            fwrite(&prop->position, 1, 1, fd);
-            break;
-        case P_PADDING:
-            fwrite(&prop->padding, sizeof(vec4), 1, fd);
-            break;
-        case P_ORDER:
-            fwrite(&prop->orientation, 1, 1, fd);
-            break;
-        case P_SHOW:
-            fwrite(&prop->show, sizeof(_Bool), 1, fd);
-            break;
-        case P_SRC:
-            goto string;
-            break;
-        case P_EVENT:
-            goto string;
-            break;
-        case P_CUSTOM:
-            // no clue yet
-            goto string; // for now
-            break;
-        case P_PLACEHOLDER:
-            goto string;
-            break;
-        case P_CONTENT:
-            goto string;
-            break;
-        case P_SPACE:
-            fwrite(&prop->space, sizeof(vec2), 1, fd);
-            break;
+void write_properties(Property* props, unsigned int properties_length, FILE* fd) {
+    for (unsigned int i = 0; i < properties_length; ++i) {
+        fwrite(&props[i].type, sizeof(PropertyType), 1, fd);
+        fwrite(&props[i].name.length, sizeof(unsigned int), 1, fd);
+        if (&props[i].name.length > 0) fwrite(props[i].name.data, sizeof(char), props[i].name.length, fd);
+        switch (props[i].type) {
+            case P_COLOR:
+                goto string;
+                break;
+            case P_SIZE:
+                fwrite(&props[i].size, sizeof(vec2), 1, fd);
+                break;
+            case P_POSITION:
+                fwrite(&props[i].position, 1, 1, fd);
+                break;
+            case P_PADDING:
+                fwrite(&props[i].padding, sizeof(vec4), 1, fd);
+                break;
+            case P_ORDER:
+                fwrite(&props[i].orientation, 1, 1, fd);
+                break;
+            case P_SHOW:
+                fwrite(&props[i].show, sizeof(_Bool), 1, fd);
+                break;
+            case P_SRC:
+                goto string;
+                break;
+            case P_EVENT:
+                goto string;
+                break;
+            case P_CUSTOM:
+                // no clue yet
+                goto string; // for now
+                break;
+            case P_PLACEHOLDER:
+                goto string;
+                break;
+            case P_CONTENT:
+                goto string;
+                break;
+            case P_SPACE:
+                fwrite(&props[i].space, sizeof(vec2), 1, fd);
+                break;
+        }
+        continue;
+    string:
+        fwrite(&props[i].value.length, sizeof(unsigned int), 1, fd);
+        if (props[i].value.length > 0) fwrite(props[i].value.data, sizeof(char), props[i].value.length, fd);
     }
-    return;
-string:
-    fwrite(&prop->value.length, sizeof(unsigned int), 1, fd);
-    if (prop->value.length > 0) fwrite(prop->value.data, sizeof(char), prop->value.length, fd);
 }
 
 void write_element(Element* res, FILE* fd) {
@@ -520,14 +522,16 @@ void write_element(Element* res, FILE* fd) {
         write_element(res->children[i], fd);
     }
     fwrite(&res->properties_length, sizeof(unsigned int), 1, fd);
-    for (unsigned int i = 0; i < res->properties_length; ++i) {
-        write_property(&res->properties[i],fd);
-    }
+    write_properties(res->properties, res->properties_length, fd);
 }
 
 
 void write_settings(Settings* settings, FILE* fd) {
-    printf("\n%d\n", settings->resolution.x);
+    unsigned long size = 28 + settings->title.length + settings->method.length;
+    for (unsigned int i = 0; i < settings->scripts_length; ++i) {
+        size += 4 + settings->scripts[i].len;
+    }
+    fwrite(&size, sizeof(unsigned long), 1, fd);
     fwrite(&settings->resolution, sizeof(vec2), 1, fd);
     fwrite(&settings->position, sizeof(vec2), 1, fd);
     fwrite(&settings->title.length, sizeof(unsigned int), 1, fd);
@@ -547,11 +551,11 @@ void write_sdom_to_binary(Element* res, char* output_file, bool serialize) {
     printf("\t (-) %s\n", output_file);
     FILE* fd = fopen(output_file, "wb");
     if (!serialize && res != NULL) {
-        fwrite(&res, sizeof(Element*), 1, fd); 
         fwrite(&l_settings, sizeof(Settings*), 1, fd);
+        fwrite(&res, sizeof(Element*), 1, fd); 
     } else if (res != NULL) {
-        write_element(res, fd);
         write_settings(l_settings, fd);
+        write_element(res, fd);
     }
     fclose(fd);
 }

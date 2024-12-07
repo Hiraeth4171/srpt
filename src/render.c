@@ -4,6 +4,7 @@
 #include "./serpent/serpent.h"
 
 Settings * _settings = NULL;
+unsigned long g_settings_size = 0;
 
 void read_properties(Property * properties, unsigned int properties_length, FILE* fd) {
     printf("<read_properties> properties_length: %d\n", properties_length);
@@ -52,7 +53,7 @@ void read_properties(Property * properties, unsigned int properties_length, FILE
                 fread(&properties[i].space, sizeof(vec2), 1, fd);
                 break;
         }
-    return;
+        continue;
 string:
         fread(&properties[i].value.length, sizeof(unsigned int), 1, fd);
         if (properties[i].value.length > 0) {
@@ -90,6 +91,7 @@ void read_element(Element* res, Element* _parent, FILE* fd) {
 
 void read_settings(Settings* settings, FILE* fd) {
     // this is terrible fix it
+    fread(&g_settings_size, sizeof(unsigned long), 1, fd);
     fread(&settings->resolution, sizeof(vec2), 1, fd);
     fread(&settings->position, sizeof(vec2), 1, fd);
     fread(&settings->title.length, sizeof(unsigned int), 1, fd);
@@ -116,12 +118,12 @@ Element* read_sdom_file (char* sdom_file, _Bool serialized) {
     FILE* fd = fopen(sdom_file, "rb");
     if (!serialized) {
         printf("recieved serialized = FALSE\n");
-        fread(&main, sizeof(Element*), 1, fd);
         fread(&_settings, sizeof(Settings*), 1, fd);
+        fread(&main, sizeof(Element*), 1, fd);
     } else {
         main = calloc(1, sizeof(Element));
-        read_element(main, NULL, fd);
         read_settings(_settings, fd);
+        read_element(main, NULL, fd);
     }
     fclose(fd);
     return main;
@@ -136,7 +138,7 @@ void render(char* sdom_file, _Bool watch, _Bool serialized){
     SDOM_Element* res = srpt_init(main);  
     renderer_run(res, _settings);
     // ^ event loop
-    free_element(main);
     free_settings(_settings);
+    free_element(main);
 }
 

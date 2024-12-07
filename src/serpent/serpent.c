@@ -84,9 +84,9 @@ SDOM_Element* create_sdom_elem_from_sdom(Element* sdom, SDOM_Element* parent) {
     } else { 
         _res->properties = sdt_hashtable_init(sdom->properties_length, sizeof(Property), hash_function, property_cmp, NULL);
     }
+    printf("%s\n", sdom->name.data);
     for (size_t i = 0; i < sdom->properties_length; ++i) {
-        sdt_hashtable_add(_res->properties, (void*)&sdom->properties[i].name.data, (void*)&sdom->properties[i]);
-        printf("%s\n", sdom->name.data);
+        sdt_hashtable_add(_res->properties, (void*)sdom->properties[i].name.data, (void*)&sdom->properties[i]);
         print_property(&sdom->properties[i]);
     }
     if (parent == NULL) { 
