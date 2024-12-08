@@ -137,33 +137,6 @@ unsigned int load_shaders() {
     return _shader_program;
 }
 
-void update_properties(SDOM_Element* elem) {
-    // this is temporary
-    Property* tmp;
-    if ((tmp = (Property*)sdt_hashtable_get(elem->properties, "position")) != NULL) {
-        switch(tmp->position) {
-            case 0:
-                break;
-            case 1:
-                elem->actual_dim.pos.x += elem->parent->dim.pos.x;
-                elem->actual_dim.pos.y += elem->parent->dim.pos.y;
-                break;
-            case 2:
-                elem->actual_dim.pos.x += elem->parent->dim.pos.x + elem->parent->dim.size.x/2 - elem->dim.size.x/2;
-                elem->actual_dim.pos.y += elem->parent->dim.pos.y + elem->parent->dim.size.y/2 - elem->dim.size.y/2;
-                break;
-        }
-    }
-    if ((tmp = (Property*)sdt_hashtable_get(elem->properties, "show")) != NULL) {
-        if(!tmp->show) {
-            return;
-        }
-    }
-    for (size_t i = 0; i < elem->len_children; ++i) {
-        update_properties(elem->children[i]);
-    }
-}
-
 void draw_element(SDOM_Element* elem) {
     // compute these only once and then make it update
     float verts[] = {

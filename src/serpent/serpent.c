@@ -258,5 +258,35 @@ SDOM_Element* get_element_by_string(String* name) {
     return get_element_from_parent_by_name(*g_main, name->data);
 }
 
+void update_properties(SDOM_Element* elem) {
+    // this is temporary
+    Property* tmp;
+    if ((tmp = (Property*)sdt_hashtable_get(elem->properties, "position")) != NULL) {
+        switch(tmp->position) {
+            case 0:
+                elem->actual_dim.pos.x = elem->parent->dim.pos.x;
+                elem->actual_dim.pos.y = elem->parent->dim.pos.y;
+                break;
+            case 1:
+                elem->actual_dim.pos.x += elem->parent->dim.pos.x;
+                elem->actual_dim.pos.y += elem->parent->dim.pos.y;
+                break;
+            case 2:
+                elem->actual_dim.pos.x += elem->parent->dim.pos.x + elem->parent->dim.size.x/2 - elem->dim.size.x/2;
+                elem->actual_dim.pos.y += elem->parent->dim.pos.y + elem->parent->dim.size.y/2 - elem->dim.size.y/2;
+                break;
+        }
+    }
+    if ((tmp = (Property*)sdt_hashtable_get(elem->properties, "show")) != NULL) {
+        if(!tmp->show) {
+            return;
+        }
+    }
+    for (size_t i = 0; i < elem->len_children; ++i) {
+        update_properties(elem->children[i]);
+    }
+}
+
+
 // get elements by name
 // get elements by string

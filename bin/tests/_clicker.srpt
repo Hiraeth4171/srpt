@@ -1,17 +1,12 @@
-!resolution 500 600;
+!resolution 600 500;
+!title "clicker"
 
-!title "this is a test!"
-!script "./clicker.c"
-!method "compile,gcc ./clicker.c " 
-// flags for including srpt will be added on automatically
+dim: 0 0 600 500;
+background-color: #141414;
 
-#main {
-    padding: 20 20 0 0;
-    order: vertical; // default
-    #counter:text {
-        
-    }
-    button {
-        onclick: $count;
-    }
+#counter {
+    position: center;
+    dim: 0 0 50 50;
+    background-color: #8ce2dd;
+    onclick: $silly;
 }
