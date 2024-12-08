@@ -52,7 +52,7 @@ static inline void sdt_hashtable_add(SDTHashtable* hashtable, void* item_id, voi
         while (cur->next != NULL) cur = cur->next;
         cur->next = (SDTLinkedListNode*)malloc(sizeof(SDTLinkedListNode));
         *(cur->next) = (SDTLinkedListNode){.value = (void*)item, .next = NULL};
-        return; // that's FUCKING insane HOW DID I EVER FUCKING FORGET THIS AM I RETARDED CHAT
+        return;
     }
     hashtable->items[i] = (SDTLinkedListNode*)malloc(sizeof(SDTLinkedListNode));
     *hashtable->items[i] = (SDTLinkedListNode){.value = (void*)item, .next = NULL};
