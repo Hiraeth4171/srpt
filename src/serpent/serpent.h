@@ -17,6 +17,8 @@ struct SDOM_Element {
 };
 
 SDOM_Element* srpt_init(Element* sdom);
+Element* srpt_read_bytearray_sdom(void** ptr, Element* parent);
+Settings* srpt_read_bytearray_settings(void** ptr);
 SDOM_Element* get_element_by_name(char*);
 SDOM_Element* get_element_by_string(String*);
 #endif

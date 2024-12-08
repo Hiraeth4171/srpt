@@ -13,9 +13,10 @@ int package(char* filename, char* outfile, int flags) {
         goto exit;
     }
     // process flags
-    // read sdom
+    // make a `.s` that .incbin's filename
+    // gcc -c thing.s -o thing.o
     // load config.ini [package] section and apply settings | oh i forgot i was gonna do it like that
-    // required gcc run
+    // build executable moment
 
 exit:
     return 0;

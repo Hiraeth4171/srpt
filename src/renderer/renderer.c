@@ -156,6 +156,7 @@ void draw_element(SDOM_Element* elem) {
 
 
 int renderer_run(SDOM_Element* main, Settings* settings) {
+    // MULTI-THREAD THIS
     // glfw initialization
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
