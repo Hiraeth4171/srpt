@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include "renderer.h"
 
+#ifdef SRPT_PACKAGED
+#include <dlfcn.h>
+#endif
+
 int indicies[] = {
     0, 1, 3,
     1, 2, 3
@@ -16,6 +20,7 @@ int indicies[] = {
 
 
 Settings* g_settings = NULL;
+static SDOM_Element** g_main = NULL;
 int g_res_loc, g_proj_loc;
 
 extern const char vshader[];
@@ -25,9 +30,51 @@ extern const char fshader[];
 extern const char* fshader_end;
 extern int fshader_size;
 
+// because we're currently just dealing with ortho projections this is pretty
+// simple but there's potential for that to not be the case which is why i'm
+// abstracting it from now ig
+_Bool point_in_rect(double x, double y, Rect box) {
+    if ((box.pos.x < x && x < box.pos.x + box.size.x) &&
+        (box.pos.y < y && y < box.pos.y + box.size.y)) return 1;
+    return 0;
+}
+
+SDOM_Element* find_clicked(double x, double y, SDOM_Element* current) {
+    SDOM_Element* _res = current;
+    if (point_in_rect(x, y, current->actual_dim)) {
+        for (unsigned int i = 0; i < current->len_children; ++i) {
+            _res = find_clicked(x,y, current->children[i]);
+            if (_res != NULL) return _res;
+        }
+        return current;
+    }
+    return NULL;
+}
+
 void process_input(GLFWwindow *window) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, 1);
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
+        double x, y;
+        SDOM_Element* current = *g_main;
+        glfwGetCursorPos(window, &x, &y);
+        SDOM_Element* temp; Property* tmp;
+        if ((temp = find_clicked(x,y, current)) != NULL && (tmp = (Property*)sdt_hashtable_get(temp->properties, "onclick")) != NULL) {
+#ifdef SRPT_PACKAGED
+            void* dl_handle = dlopen(NULL, RTLD_LAZY);
+            void(*func)()  = dlsym(dl_handle, tmp->value.data);
+            if (!func) {
+                fprintf(stderr, "dlsym failed: %s\n", dlerror());
+                dlclose(dl_handle);
+            }
+            if (func) func();
+            dlclose(dl_handle);
+#endif
+        }
+    }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -90,20 +137,20 @@ unsigned int load_shaders() {
     return _shader_program;
 }
 
-
-void draw_element(SDOM_Element* elem) {
-    static vec2 offsets = {0}; Property* tmp;
+void update_properties(SDOM_Element* elem) {
+    // this is temporary
+    Property* tmp;
     if ((tmp = (Property*)sdt_hashtable_get(elem->properties, "position")) != NULL) {
         switch(tmp->position) {
             case 0:
                 break;
             case 1:
-                offsets.x += elem->parent->dim.pos.x;
-                offsets.y += elem->parent->dim.pos.y;
+                elem->actual_dim.pos.x += elem->parent->dim.pos.x;
+                elem->actual_dim.pos.y += elem->parent->dim.pos.y;
                 break;
             case 2:
-                offsets.x += elem->parent->dim.pos.x + elem->parent->dim.size.x/2 - elem->dim.size.x/2;
-                offsets.y += elem->parent->dim.pos.y + elem->parent->dim.size.y/2 - elem->dim.size.y/2;
+                elem->actual_dim.pos.x += elem->parent->dim.pos.x + elem->parent->dim.size.x/2 - elem->dim.size.x/2;
+                elem->actual_dim.pos.y += elem->parent->dim.pos.y + elem->parent->dim.size.y/2 - elem->dim.size.y/2;
                 break;
         }
     }
@@ -112,33 +159,40 @@ void draw_element(SDOM_Element* elem) {
             return;
         }
     }
+    for (size_t i = 0; i < elem->len_children; ++i) {
+        update_properties(elem->children[i]);
+    }
+}
+
+void draw_element(SDOM_Element* elem) {
+    // compute these only once and then make it update
     float verts[] = {
-        (float)elem->dim.pos.x + offsets.x,
-        (float)(elem->dim.pos.y+elem->dim.size.y + offsets.y),
+        (float)elem->actual_dim.pos.x,
+        (float)(elem->actual_dim.pos.y+elem->actual_dim.size.y),
         -1.0f,
         (float)elem->bg_color.r,
         (float)elem->bg_color.g,
         (float)elem->bg_color.b,
         (float)elem->bg_color.a,
 
-        (float)(elem->dim.pos.x+elem->dim.size.x + offsets.x),
-        (float)(elem->dim.pos.y+elem->dim.size.y + offsets.y),
+        (float)(elem->actual_dim.pos.x+elem->actual_dim.size.x),
+        (float)(elem->actual_dim.pos.y+elem->actual_dim.size.y),
         -1.0f,
         (float)elem->bg_color.r,
         (float)elem->bg_color.g,
         (float)elem->bg_color.b,
         (float)elem->bg_color.a,
 
-        (float)(elem->dim.pos.x+elem->dim.size.x + offsets.x),
-        (float)elem->dim.pos.y + offsets.y,
+        (float)(elem->actual_dim.pos.x+elem->actual_dim.size.x),
+        (float)elem->actual_dim.pos.y,
         -1.0f,
         (float)elem->bg_color.r,
         (float)elem->bg_color.g,
         (float)elem->bg_color.b,
         (float)elem->bg_color.a,
 
-        (float)elem->dim.pos.x + offsets.x,
-        (float)elem->dim.pos.y + offsets.y,
+        (float)elem->actual_dim.pos.x,
+        (float)elem->actual_dim.pos.y,
         -1.0f,
         (float)elem->bg_color.r,
         (float)elem->bg_color.g,
@@ -151,12 +205,13 @@ void draw_element(SDOM_Element* elem) {
     for (size_t i = 0; i < elem->len_children; ++i) {
         draw_element(elem->children[i]);
     }
-    offsets = (vec2){0};
 }
 
 
 int renderer_run(SDOM_Element* main, Settings* settings) {
     // MULTI-THREAD THIS
+    g_main = malloc(sizeof(SDOM_Element*));
+    *g_main = main;
     // glfw initialization
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -258,7 +313,10 @@ int renderer_run(SDOM_Element* main, Settings* settings) {
         -1.0f               , 1.0f                  , 0.0f  , 1.0f
     };
     glUniformMatrix4fv(g_proj_loc, 1, GL_FALSE, proj);
-
+    glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
+    update_properties(main);
+    printf("\n(|)%s\n", find_clicked(55, 55, main)->name.data);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
     glUseProgram(shader_program);
     while(!glfwWindowShouldClose(window)) {
         process_input(window);

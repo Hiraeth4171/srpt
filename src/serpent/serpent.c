@@ -50,6 +50,9 @@ void read_props(void** ptr, Property* props, unsigned int props_length) {
             case P_SHOW:
                 mem_read(&props[i].show, *ptr, sizeof(_Bool));
                 break;
+            case P_ONCLICK:
+                goto string;
+                break;
             case P_SRC:
                 goto string;
                 break;
@@ -147,7 +150,7 @@ void print_property(void* prop) {
     static const char* orientation_lookup[2] =(const char*[2]){"vertical", "horizontal"};
     static const char* true_false_lookup[2] =(const char*[2]){"false", "true"};
     switch (property.type) {
-        case P_COLOR: case P_PLACEHOLDER: case P_CONTENT: case P_SRC: case P_EVENT: 
+        case P_COLOR: case P_PLACEHOLDER: case P_CONTENT: case P_SRC: case P_EVENT: case P_ONCLICK: 
             printf("\n\t{%s, %s}\n", property.name.data, property.value.data);
             break;
         case P_SIZE: case P_SPACE: 
@@ -184,6 +187,7 @@ SDOM_Element* create_sdom_elem_from_sdom(Element* sdom, SDOM_Element* parent) {
         sdom->type,
         parent,
         sdom->dim,
+        (Rect){(vec2){sdom->dim.pos.x, sdom->dim.pos.y}, (vec2){sdom->dim.size.x, sdom->dim.size.y}},
         sdom->color,
         sdom->children_length,
         NULL, 

@@ -53,6 +53,11 @@ void add_property(Element* elem, PropertyType type, char* name, char** values, u
                 else if (values[0][0] == 'f') elem->properties[elem->properties_length].show = 0;
             }
             break;
+        case P_ONCLICK:
+            if (values_len != 1) {
+                printf("BROKEN."); // later support rgba(stuff) or something
+            } else goto string;
+            break;
         case P_PADDING:
             if (values_len == 2) elem->properties[elem->properties_length].padding = (vec4){ atoi(values[0]), atoi(values[1]), atoi(values[0]), atoi(values[1]) };
             if (values_len == 4) elem->properties[elem->properties_length].padding = (vec4){ atoi(values[0]), atoi(values[1]), atoi(values[2]), atoi(values[3]) };
@@ -164,7 +169,7 @@ void print_properties(Property* properties, unsigned int length) {
     static const char* true_false_lookup[2] =(const char*[2]){"false", "true"};
     for (unsigned int i = 0; i < length; ++i) {
         switch (properties[i].type) {
-            case P_COLOR: case P_PLACEHOLDER: case P_CONTENT: case P_SRC: case P_EVENT: 
+            case P_COLOR: case P_PLACEHOLDER: case P_CONTENT: case P_SRC: case P_EVENT: case P_ONCLICK: 
                 printf("\n\t{%s, %s}\n", properties[i].name.data, properties[i].value.data);
                 break;
             case P_SIZE: case P_SPACE: 
@@ -175,8 +180,8 @@ void print_properties(Property* properties, unsigned int length) {
                 break;
             case P_ORDER:
                 printf("\n\t{%s, %s}\n", properties[i].name.data, orientation_lookup[(int)properties[i].orientation]);
+                break;
             case P_SHOW:
-                printf("correct!\n");
                 printf("\n\t{%s, %s}\n", properties[i].name.data, true_false_lookup[(int)properties[i].show]);
                 break;
             case P_PADDING:

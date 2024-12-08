@@ -33,6 +33,9 @@ void read_properties(Property * properties, unsigned int properties_length, FILE
             case P_SHOW:
                 fread(&properties[i].show, sizeof(_Bool), 1, fd);
                 break;
+            case P_ONCLICK:
+                goto string;
+                break;
             case P_SRC:
                 goto string;
                 break;

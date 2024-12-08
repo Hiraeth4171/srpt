@@ -42,6 +42,7 @@ typedef enum {
     BUTTON,
     POSITION,
     SHOW,
+    ONCLICK,
     DIM,
     TEXTBOX,
     CANVAS,
@@ -71,6 +72,7 @@ char* lookup[] = {
     "BUTTON",
     "POSITION",
     "SHOW",
+    "ONCLICK",
     "DIM",
     "TEXTBOX",
     "CANVAS",
@@ -248,6 +250,7 @@ Token* tokenize(char* buffer, long* size) {
         TOKENIZE_KEYWORD("content", CONTENT, ptr, len, tokens, index)
         TOKENIZE_DYNAMIC_KEYWORD(extract_non_special(ptr+8, len, ""), live_compare("position:", ptr, len), POSITION, ptr, len, tokens, index)
         TOKENIZE_DYNAMIC_KEYWORD(extract_non_special(ptr+4, len, ""), live_compare("show:", ptr, len), SHOW, ptr, len, tokens, index)
+        TOKENIZE_KEYWORD("onclick", ONCLICK, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("dim", DIM, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("dim", DIM, ptr, len, tokens, index)
         TOKENIZE_KEYWORD("img", IMG, ptr, len, tokens, index)
@@ -379,6 +382,9 @@ Element* sdom(Token* tokens, long len) {
                 while(j-- != -1) values[j] = tokens[i+1+j].value; */
                 add_property(current_parent, P_SHOW, "show", &(tokens[i].value), 1);
                 break;
+            case ONCLICK:
+                add_property(current_parent, P_ONCLICK, "onclick", &(tokens[i+2].value), 1);
+                break;
             case DIM:
                 //skip ":"
                 current_parent->dim.pos.x = atoi(tokens[i+2].value);
@@ -482,6 +488,9 @@ void write_properties(Property* props, unsigned int properties_length, FILE* fd)
                 break;
             case P_SHOW:
                 fwrite(&props[i].show, sizeof(_Bool), 1, fd);
+                break;
+            case P_ONCLICK:
+                goto string;
                 break;
             case P_SRC:
                 goto string;

@@ -10,6 +10,7 @@ struct SDOM_Element {
     ElementType type;
     SDOM_Element* parent;
     Rect dim;
+    Rect actual_dim;
     Color bg_color;
     unsigned int len_children;
     SDOM_Element** children;
