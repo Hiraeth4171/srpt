@@ -237,6 +237,30 @@ SDOM_Element* srpt_init(Element* _sdom) {
     return *g_main;
 }
 
+void srpt_set_property (SDOM_Element* elem, char* property_name, void* value) {
+    Property* prop;
+    if ((prop = sdt_hashtable_get(elem->properties, property_name)) != NULL) {
+        switch (prop->type) {
+            case P_POSITION:
+                prop->position = *(char*)value;
+                break;
+            case P_SHOW:
+                prop->show = *(_Bool*)value;
+                break;
+            case P_ONCLICK:
+                prop->value.length = strlen((char*)value);
+                prop->value.data = (char*)value;
+                break;
+            default: // yk add the rest later and allat
+                break;
+        }
+    } else { // need to create a new property entry;
+        // do this later i cba rn
+    }
+    update_properties(elem); // probs wanna make an update_property() to use 
+                             // here instead and put that into the switch statement
+}
+
 SDOM_Element* get_element_from_parent_by_name(SDOM_Element* parent, char* name) {
     SDOM_Element* _res = NULL;
     for (size_t i = 0; i < parent->len_children; ++i) {
@@ -279,7 +303,8 @@ void update_properties(SDOM_Element* elem) {
     }
     if ((tmp = (Property*)sdt_hashtable_get(elem->properties, "show")) != NULL) {
         if(!tmp->show) {
-            return;
+            // store something in SDOM_Element that says if it's visible or not
+            // and just change that ig
         }
     }
     for (size_t i = 0; i < elem->len_children; ++i) {

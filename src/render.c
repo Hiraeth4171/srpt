@@ -71,10 +71,7 @@ void read_element(Element* res, Element* _parent, FILE* fd) {
     // forward allocate, allocate a child before passing it on;
     // put this all into one fread (smh)
     res->_parent = _parent;
-    fread(&res->type, sizeof(ElementType), 1, fd);
-    fread(&res->dim, sizeof(Rect), 1, fd);
-    fread(&res->color.raw, sizeof(char), 4, fd);
-    fread(&res->name.length, sizeof(unsigned int), 1, fd);
+    fread(&res->type, sizeof(ElementType) + sizeof(Rect) + 4 + sizeof(unsigned int), 1, fd);
     res->name.data = calloc(res->name.length+1, sizeof(char));
     fread(res->name.data, sizeof(char), res->name.length, fd);
     res->name.data[res->name.length] = '\0';
@@ -95,9 +92,7 @@ void read_element(Element* res, Element* _parent, FILE* fd) {
 void read_settings(Settings* settings, FILE* fd) {
     // this is terrible fix it
     fread(&g_settings_size, sizeof(unsigned long), 1, fd);
-    fread(&settings->resolution, sizeof(vec2), 1, fd);
-    fread(&settings->position, sizeof(vec2), 1, fd);
-    fread(&settings->title.length, sizeof(unsigned int), 1, fd);
+    fread(&settings->resolution, sizeof(vec2) + sizeof(vec2) + sizeof(unsigned int), 1, fd);
     settings->title.data = calloc(settings->title.length+1, sizeof(char));
     fread(settings->title.data, sizeof(char), settings->title.length, fd);
     settings->title.data[settings->title.length] = '\0';

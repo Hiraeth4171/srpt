@@ -288,7 +288,6 @@ int renderer_run(SDOM_Element* main, Settings* settings) {
     glUniformMatrix4fv(g_proj_loc, 1, GL_FALSE, proj);
     glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
     update_properties(main);
-    printf("\n(|)%s\n", find_clicked(55, 55, main)->name.data);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glUseProgram(shader_program);
     while(!glfwWindowShouldClose(window)) {

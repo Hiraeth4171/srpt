@@ -37,12 +37,11 @@ typedef enum {
     SEMI, // ;
     COLOR, // color
     BACKGROUND_COLOR, //BACKGROUND_COLOR
-    VAR_LOOKUP, // $thing
+    ELEM_LOOKUP,
+    ROTATE,
+    ONCLICK,
     IMG,
     BUTTON,
-    POSITION,
-    SHOW,
-    ONCLICK,
     DIM,
     TEXTBOX,
     CANVAS,
@@ -50,6 +49,9 @@ typedef enum {
     OVERLAY,
     CONTENT,
     BANG,
+    VAR_LOOKUP, // $thing
+    POSITION,
+    SHOW,
     DOT, // .
     LADDER, // #
     HEX_COLOR, // #098340
@@ -67,12 +69,11 @@ char* lookup[] = {
     "SEMI",
     "COLOR",
     "BACKGROUND_COLOR",
-    "VAR_LOOKUP",
+    "ELEM_LOOKUP",
+    "ROTATE",
+    "ONCLICK",
     "IMG", 
     "BUTTON",
-    "POSITION",
-    "SHOW",
-    "ONCLICK",
     "DIM",
     "TEXTBOX",
     "CANVAS",
@@ -80,6 +81,9 @@ char* lookup[] = {
     "OVERLAY",
     "CONTENT",
     "BANG (!)",
+    "VAR_LOOKUP",
+    "POSITION",
+    "SHOW",
     "DOT",
     "LADDER",
     "HEX_COLOR",
@@ -113,9 +117,9 @@ int compile(char* filename, char* output, bool watch, bool serialize) {
     char* buffer = read_file(file, len);
     char* lexed = lex(buffer, *len);
     free(buffer);
-    printf("\n--------------------------------------------\n");
-    printf("\n\n\t (**) %s\n\n\n", lexed);
-    printf("\n--------------------------------------------\n");
+    /*printf("\n--------------------------------------------\n");*/
+    /*printf("\n\n\t (**) %s\n\n\n", lexed);*/
+    /*printf("\n--------------------------------------------\n");*/
     Token* tokens = tokenize(lexed, len);
     free(lexed);
     print_tokens(tokens, *len);
@@ -141,16 +145,18 @@ char* lex(char* buffer, long size) {
     while (*ptr != '\0') {
         if (*ptr == ':') {
             _buff[i++] = *ptr++;
-            if (*ptr == ' ') ptr++;
+            while (*ptr == ' ') ptr++;
         }
         if (*ptr == '/' && *(ptr+1) == '/') {
             while(*ptr++ != '\n');
         }
-        if (*ptr == ' ' && *(ptr+1) == ' ') {
+        if ((*ptr == ' ' && *(ptr+1) == ' ') || (*ptr == ' ' && *(ptr+1) == ':')) {
             if(*(ptr-1) == '\n') {
                 while(*ptr == ' ') ptr++;
             } else {
                 while(*ptr == ' ') ptr++;
+                if (*ptr == ':') continue;
+                if (*ptr == ';') continue;
                 ptr--;
             }
         }
@@ -521,10 +527,7 @@ void write_properties(Property* props, unsigned int properties_length, FILE* fd)
 
 void write_element(Element* res, FILE* fd) {
     // ignore _parent in write;
-    fwrite(&res->type, sizeof(ElementType), 1, fd);
-    fwrite(&res->dim, sizeof(Rect), 1, fd);
-    fwrite(&res->color.raw, sizeof(char), 4, fd);
-    fwrite(&res->name.length, sizeof(unsigned int), 1, fd);
+    fwrite(&res->type, sizeof(ElementType) + sizeof(Rect) + 4 + sizeof(unsigned int), 1, fd);
     fwrite(res->name.data, sizeof(char), res->name.length, fd);
     fwrite(&res->children_length, sizeof(unsigned int), 1, fd);
     for (unsigned int i = 0; i < res->children_length; ++i) {
@@ -541,9 +544,7 @@ void write_settings(Settings* settings, FILE* fd) {
         size += 4 + settings->scripts[i].len;
     }
     fwrite(&size, sizeof(unsigned long), 1, fd);
-    fwrite(&settings->resolution, sizeof(vec2), 1, fd);
-    fwrite(&settings->position, sizeof(vec2), 1, fd);
-    fwrite(&settings->title.length, sizeof(unsigned int), 1, fd);
+    fwrite(&settings->resolution, sizeof(vec2) + sizeof(vec2) + sizeof(unsigned int) , 1, fd);
     fwrite(settings->title.data, sizeof(char), settings->title.length, fd);
     fwrite(&settings->method.length, sizeof(unsigned int), 1, fd);
     fwrite(settings->method.data, sizeof(char), settings->method.length, fd);
@@ -571,7 +572,7 @@ void write_sdom_to_binary(Element* res, char* output_file, bool serialize) {
 
 void free_tokens(Token* tokens, long len) {
     for(int i = len-1; i >= 0; --i) {
-        if(tokens[i].type >= 16){
+        if(tokens[i].type >= BANG){
             free(tokens[i].value);
         }
     }
