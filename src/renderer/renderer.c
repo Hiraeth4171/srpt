@@ -11,6 +11,8 @@
 #include <dlfcn.h>
 #endif
 
+
+// batch render this
 int indicies[] = {
     0, 1, 3,
     1, 2, 3

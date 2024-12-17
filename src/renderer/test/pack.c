@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-//unsigned int counter = 0;
+unsigned int counter = 0;
 SDOM_Element* g_sdom_main = NULL;
 
 extern void silly () {

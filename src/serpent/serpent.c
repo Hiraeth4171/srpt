@@ -274,12 +274,17 @@ SDOM_Element* get_element_from_parent_by_name(SDOM_Element* parent, char* name) 
     return _res;
 }
 
-SDOM_Element* get_element_by_name(char* name) {
+SDOM_Element* srpt_get_element_by_name(char* name) {
     return get_element_from_parent_by_name(*g_main, name);
 }
 
-SDOM_Element* get_element_by_string(String* name) {
+SDOM_Element* srpt_get_element_by_string(String* name) {
     return get_element_from_parent_by_name(*g_main, name->data);
+}
+
+SDOM_Element* srpt_create_element() {
+    // later
+    return NULL;
 }
 
 void update_properties(SDOM_Element* elem) {
@@ -311,7 +316,3 @@ void update_properties(SDOM_Element* elem) {
         update_properties(elem->children[i]);
     }
 }
-
-
-// get elements by name
-// get elements by string

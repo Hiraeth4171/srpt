@@ -107,8 +107,8 @@ int main(int argc, char* argv[]) {
         } else NEW_COMMAND("init", ptr, len) {
             // initalize a new srpt project
             /*
-             *  clone a template repo
-             *  
+             * clone a template repo
+             * 
              * */
         }
     }

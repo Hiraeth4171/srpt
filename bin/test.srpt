@@ -1,25 +1,22 @@
-!resolution    1920    1080
-!title     "testfile"
-!method     "package"
+!resolution 1920 1080
+!title "hello there"
+!method "package"
 
-dim                       :                 0 0 1920 1080;
-background-color          :                 #0000FF;
+dim:0 0 1920 1080;
+background-color: #141414;
 
 #big {
-    show :  true;
-    dim :                               10     10     800    200;
-background-color     : #ff0000;
-    #small           {
-        position  :             relative;
-        show : true   ;
-        dim : 0 0 450     150;
-        background-color : #00ff00;
-#smaller    {
-            onclick : $silly;
-             position : center;
-            show : true;
-              dim : 0 0 100 50;
-          background-color : #ffff00;
+    dim: 10 10 800 200;
+    background-color: #349232;
+    #small {
+        position: relative;
+        dim: 0 0 450 150;
+        background-color: #00ff00;
+        #counter {
+            onclick: $silly;
+            position: center;
+            dim: 0 0 100 50;
+            background-color: #ffff00;
         }
     }
 }
