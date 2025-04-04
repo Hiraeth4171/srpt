@@ -1,8 +1,7 @@
 log/*
 *.log
 *.sdom
-src/renderer/test/pack.c
-src/renderer/test.c
+renderer/test/*
 planning/*
 .clangd
 srpt
